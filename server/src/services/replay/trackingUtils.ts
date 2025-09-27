@@ -37,11 +37,10 @@ export async function parseTrackingData(
   // Parse user agent
   const ua = UAParser(userAgent);
 
-  console.info("TRACKING SESSION REPLAY");
   const geoData = await getLocation([ipAddress], true);
 
   const countryCode = geoData?.[ipAddress]?.countryIso || "";
-  const regionCode = geoData?.[ipAddress]?.subdivisions?.[0]?.isoCode || "";
+  const regionCode = geoData?.[ipAddress]?.region || "";
   const latitude = geoData?.[ipAddress]?.latitude || 0;
   const longitude = geoData?.[ipAddress]?.longitude || 0;
   const city = geoData?.[ipAddress]?.city || "";

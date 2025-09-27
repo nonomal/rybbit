@@ -49,7 +49,7 @@ class PageviewQueue {
       const dataForIp = geoData?.[pv.ipAddress];
 
       const countryCode = dataForIp?.countryIso || "";
-      const regionCode = dataForIp?.subdivisions?.[0]?.isoCode || "";
+      const regionCode = dataForIp?.region || "";
       const latitude = dataForIp?.latitude || 0;
       const longitude = dataForIp?.longitude || 0;
       const city = dataForIp?.city || "";

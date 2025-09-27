@@ -11,12 +11,12 @@ const dbPath = path.join(process.cwd(), "GeoLite2-City.mmdb");
 export type LocationResponse = {
   city?: string;
   country?: string;
+  region?: string;
   countryIso?: string;
   latitude?: number;
   longitude?: number;
   timeZone?: string;
   error?: string;
-  subdivisions?: SubdivisionsRecord[];
 
   vpn?: string;
   crawler?: string;
@@ -150,7 +150,7 @@ function extractLocationData(response: City | null): LocationResponse {
     latitude: response.location?.latitude,
     longitude: response.location?.longitude,
     timeZone: response.location?.timeZone,
-    subdivisions: response.subdivisions,
+    region: response.subdivisions?.[0]?.isoCode,
   };
 }
 
@@ -162,6 +162,7 @@ async function getLocationFromIPAPI(ips: string[]): Promise<Record<string, Locat
     return {};
   }
 
+  const localInfo = await getLocationFromLocal(ips);
   try {
     const response = await fetch("https://api.ipapi.is/", {
       method: "POST",
@@ -176,7 +177,7 @@ async function getLocationFromIPAPI(ips: string[]): Promise<Record<string, Locat
 
     if (!response.ok) {
       logger.error(`IPAPI request failed: ${response.status} ${response.statusText}`);
-      return getLocationFromLocal(ips);
+      return localInfo;
     }
 
     const data = (await response.json()) as Record<string, IPAPIResponse>;
@@ -193,6 +194,7 @@ async function getLocationFromIPAPI(ips: string[]): Promise<Record<string, Locat
         city: item.location?.city,
         country: item.location?.country,
         countryIso: item.location?.country_code,
+        region: localInfo[ip]?.region,
         latitude: item.location?.latitude,
         longitude: item.location?.longitude,
         timeZone: item.location?.timezone,
