@@ -26,13 +26,17 @@ class UsageService {
   private initializeUsageCheckCron() {
     if (IS_CLOUD && process.env.NODE_ENV !== "development") {
       // Schedule the monthly usage checker to run every 30 minutes
-      this.usageCheckTask = cron.schedule("*/30 * * * *", async () => {
-        try {
-          await this.updateOrganizationsMonthlyUsage();
-        } catch (error) {
-          this.logger.error(error as Error, "Error during usage check");
-        }
-      });
+      this.usageCheckTask = cron.schedule(
+        "*/30 * * * *",
+        async () => {
+          try {
+            await this.updateOrganizationsMonthlyUsage();
+          } catch (error) {
+            this.logger.error(error as Error, "Error during usage check");
+          }
+        },
+        { timezone: "UTC" }
+      );
 
       // Run immediately on startup
       this.updateOrganizationsMonthlyUsage();

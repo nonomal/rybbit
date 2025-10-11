@@ -357,11 +357,15 @@ class WeeklyReportService {
 
             await sendWeeklyReportEmail(memberData.email, memberData.name, singleSiteReport);
             this.logger.info(
-              { email: memberData.email, organizationId: report.organizationId, siteId: site.siteId, siteName: site.siteName },
+              {
+                email: memberData.email,
+                organizationId: report.organizationId,
+                siteId: site.siteId,
+                siteName: site.siteName,
+              },
               "Sent weekly report email for site"
             );
           } catch (error) {
-            console.info(String(error));
             this.logger.error(
               { error, email: memberData.email, organizationId: report.organizationId, siteId: site.siteId },
               "Failed to send email to member for site"
@@ -408,13 +412,17 @@ class WeeklyReportService {
     this.generateAndSendReports();
 
     // Schedule weekly reports to run every Monday at midnight UTC
-    this.cronTask = cron.schedule("0 0 * * 1", async () => {
-      try {
-        await this.generateAndSendReports();
-      } catch (error) {
-        this.logger.error(error as Error, "Error during weekly report generation");
-      }
-    });
+    this.cronTask = cron.schedule(
+      "0 0 * * 1",
+      async () => {
+        try {
+          await this.generateAndSendReports();
+        } catch (error) {
+          this.logger.error(error as Error, "Error during weekly report generation");
+        }
+      },
+      { timezone: "UTC" }
+    );
 
     this.logger.info("Weekly report cron initialized (runs every Monday at midnight UTC)");
   }
