@@ -1,13 +1,33 @@
 import BoringAvatar from "boring-avatars";
 import { round } from "lodash";
+import { DateTime } from "luxon";
 import mapboxgl from "mapbox-gl";
 import { createElement, useEffect, useRef } from "react";
 // @ts-ignore - React 19 has built-in types
 import { renderToStaticMarkup } from "react-dom/server";
 import * as CountryFlags from "country-flag-icons/react/3x2";
-import { Monitor, Smartphone, Link } from "lucide-react";
+import {
+  Monitor,
+  Smartphone,
+  Link,
+  Eye,
+  MousePointerClick,
+  Search,
+  ExternalLink,
+  Users,
+  Mail,
+  HelpCircle,
+  DollarSign,
+  Video,
+  Handshake,
+  FileText,
+  ShoppingCart,
+  Calendar,
+  Headphones,
+} from "lucide-react";
 import { useTimelineSessions } from "./useTimelineSessions";
 import { generateName } from "../../../../components/Avatar";
+import { formatShortDuration, hour12, userLocale } from "../../../../lib/dateTimeUtils";
 
 // Generate avatar SVG using boring-avatars
 function generateAvatarSVG(userId: string, size: number): string {
@@ -73,26 +93,95 @@ function getOSIconPath(os: string): string {
   return OS_TO_LOGO[os] ? `/operating-systems/${OS_TO_LOGO[os]}` : "";
 }
 
-// Format duration from seconds to readable format
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds} sec`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  if (minutes < 60) return `${minutes} min ${remainingSeconds} sec`;
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours} hr ${remainingMinutes} min`;
+// Get channel icon based on channel type
+function getChannelIcon(channel: string): string {
+  let Icon;
+  switch (channel) {
+    case "Direct":
+      Icon = Link;
+      break;
+    case "Organic Search":
+    case "Paid Search":
+      Icon = Search;
+      break;
+    case "Referral":
+      Icon = ExternalLink;
+      break;
+    case "Organic Social":
+    case "Paid Social":
+      Icon = Users;
+      break;
+    case "Email":
+      Icon = Mail;
+      break;
+    case "Organic Video":
+      Icon = Video;
+      break;
+    case "Affiliate":
+      Icon = Handshake;
+      break;
+    case "Content":
+      Icon = FileText;
+      break;
+    case "Organic Shopping":
+      Icon = ShoppingCart;
+      break;
+    case "Event":
+      Icon = Calendar;
+      break;
+    case "Audio":
+      Icon = Headphones;
+      break;
+    case "Display":
+    case "Paid Unknown":
+      Icon = DollarSign;
+      break;
+    case "Unknown":
+    default:
+      Icon = HelpCircle;
+      break;
+  }
+  const iconElement = createElement(Icon, { size: 14, className: "inline-block" });
+  return renderToStaticMarkup(iconElement);
 }
 
-// Format referrer display
-function formatReferrer(referrer: string, channel: string): string {
-  if (!referrer || referrer === "(direct)") return "Direct";
+// Extract domain from referrer URL
+function extractDomain(url: string): string | null {
   try {
-    const url = new URL(referrer);
-    return url.hostname;
+    if (!url || url === "direct") return null;
+    if (url.startsWith("android-app://")) {
+      const match = url.match(/android-app:\/\/([^/]+)/);
+      return match ? match[1] : null;
+    }
+    const urlObj = new URL(url);
+    return urlObj.hostname;
   } catch {
-    return channel || "Direct";
+    return null;
   }
+}
+
+// Get display name for domain
+function getDisplayName(hostname: string): string {
+  if (hostname.startsWith("google.") || hostname.startsWith("www.google.")) return "Google";
+  if (hostname === "accounts.google.com") return "Google";
+  if (hostname === "mail.google.com") return "Gmail";
+
+  const commonSites: Record<string, string> = {
+    "bing.com": "Bing",
+    "facebook.com": "Facebook",
+    "www.facebook.com": "Facebook",
+    "instagram.com": "Instagram",
+    "youtube.com": "YouTube",
+    "reddit.com": "Reddit",
+    "twitter.com": "Twitter",
+    "x.com": "X",
+    "t.co": "X",
+    "linkedin.com": "LinkedIn",
+    "github.com": "GitHub",
+    "tiktok.com": "TikTok",
+  };
+
+  return commonSites[hostname] || hostname;
 }
 
 export function useTimelineLayer({
@@ -188,62 +277,63 @@ export function useTimelineLayer({
           const showTooltip = () => {
             if (!map.current || !popupRef.current) return;
 
-            const avatarSVG = generateAvatarSVG(session.user_id, 40);
+            const avatarSVG = generateAvatarSVG(session.user_id, 36);
             const countryCode = session.country?.length === 2 ? session.country : "";
             const flagSVG = renderCountryFlag(countryCode);
             const deviceIconSVG = renderDeviceIcon(session.device_type || "");
-            const referrerIconSVG = renderReferrerIcon();
-            const referrerDisplay = formatReferrer(session.referrer, session.channel);
-            const durationDisplay = formatDuration(session.session_duration || 0);
             const browserIconPath = getBrowserIconPath(session.browser || "");
             const osIconPath = getOSIconPath(session.operating_system || "");
+
+            // Duration formatting
+            const durationDisplay = formatShortDuration(session.session_duration || 0);
+
+            // Start time formatting
+            const startTime = DateTime.fromSQL(session.session_start, { zone: "utc" })
+              .setLocale(userLocale)
+              .toLocal()
+              .toFormat(hour12 ? "MMM d, h:mm a" : "dd MMM, HH:mm");
+
+            // Pageview and event icons
+            const pageviewIconSVG = renderToStaticMarkup(
+              createElement(Eye, { size: 14, className: "inline-block text-blue-400" })
+            );
+            const eventIconSVG = renderToStaticMarkup(
+              createElement(MousePointerClick, { size: 14, className: "inline-block text-amber-400" })
+            );
 
             const name = generateName(session.user_id);
 
             const html = `
               <div class="flex flex-col gap-3 p-1">
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                <div class="flex items-start gap-2.5">
+                  <div class="flex-shrink-0 w-9 h-9 rounded-full overflow-hidden">
                     ${avatarSVG}
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h3 class="text-base font-semibold text-white truncate">${name}</h3>
+                    <h3 class="text-sm font-semibold text-white truncate">${name}</h3>
+                    <div class="flex items-center gap-1 text-xs text-neutral-300 mt-0.5">
+                      ${flagSVG}
+                      <span>${session.city || "Unknown"}, ${session.country || "Unknown"}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-neutral-300 mt-1">
-                  <span class="flex items-center gap-1.5">
-                    ${flagSVG}
-                    ${session.city || "Unknown"}, ${session.country || "Unknown"}
+                <div class="flex flex-wrap items-center gap-1.5">
+                  ${browserIconPath ? `<img src="${browserIconPath}" alt="${session.browser}" title="${session.browser}" class="w-4 h-4" />` : ""}
+                  ${osIconPath ? `<img src="${osIconPath}" alt="${session.operating_system}" title="${session.operating_system}" class="w-4 h-4" />` : ""}
+                  <span class="flex items-center" title="${session.device_type}">${deviceIconSVG}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-neutral-800 text-neutral-300 text-xs">
+                    ${pageviewIconSVG}
+                    <span>${session.pageviews || 0}</span>
                   </span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-neutral-800 text-neutral-300 text-xs">
+                    ${eventIconSVG}
+                    <span>${session.events || 0}</span>
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-neutral-400 pt-1.5 border-t border-neutral-700">
+                  <span>${startTime}</span>
                   <span class="text-neutral-500">•</span>
-                  <span class="flex items-center gap-1.5">
-                    ${osIconPath ? `<img src="${osIconPath}" alt="" class="w-3.5 h-3.5 inline-block" />` : ""}
-                    ${session.operating_system || "Unknown"}
-                  </span>
-                  </div>
-                  <div class="flex items-center gap-2 text-sm text-neutral-300 mt-0.5">
-                    <span class="flex items-center gap-1.5">
-                      ${deviceIconSVG}
-                      ${session.device_type || "Unknown"}
-                    </span>
-                    <span class="text-neutral-500">•</span>
-                    <span class="flex items-center gap-1.5">
-                      ${browserIconPath ? `<img src="${browserIconPath}" alt="" class="w-3.5 h-3.5 inline-block" />` : ""}
-                      ${session.browser || "Unknown"}
-                    </span>
-                  </div>
-                <div class="flex flex-col gap-1.5 text-sm border-t border-neutral-700 pt-2">
-                  <div class="flex justify-between items-center">
-                    <span class="text-neutral-400">Referrer:</span>
-                    <span class="text-white font-medium flex items-center gap-1.5">
-                      ${referrerIconSVG}
-                      ${referrerDisplay}
-                    </span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-neutral-400">Session time:</span>
-                    <span class="text-white font-medium">${durationDisplay}</span>
-                  </div>
+                  <span>${durationDisplay}</span>
                 </div>
               </div>
             `;
