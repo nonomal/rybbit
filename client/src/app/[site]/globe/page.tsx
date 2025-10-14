@@ -22,7 +22,7 @@ import { useLayerVisibility } from "./hooks/useLayerVisibility";
 import { useMapbox } from "./hooks/useMapbox";
 import { useSubdivisionsLayer } from "./hooks/useSubdivisionsLayer";
 import { useTimelineStore } from "./timelineStore";
-import { useTimelineSessions } from "./hooks/useTimelineSessions";
+import { useTimelineSessions } from "./hooks/timelineLayer/useTimelineSessions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { WINDOW_SIZE_OPTIONS } from "./timelineUtils";
 
@@ -89,8 +89,8 @@ export default function GlobePage() {
                 title="Mapbox access token not found"
                 description={
                   <p className="text-sm max-w-[600px] text-center">
-                    Please set the <code>NEXT_PUBLIC_MAPBOX_TOKEN</code> environment variable and rebuild all
-                    containers. To get a Mapbox token, please visit{" "}
+                    Please set the <code>MAPBOX_TOKEN</code> environment variable and rebuild all containers. To get a
+                    Mapbox token, please visit{" "}
                     <a
                       href="https://docs.mapbox.com/help/dive-deeper/access-tokens/"
                       target="_blank"

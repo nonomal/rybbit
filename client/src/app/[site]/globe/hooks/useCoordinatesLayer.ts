@@ -192,7 +192,7 @@ export function useCoordinatesLayer({
 
           const coordinates = e.lngLat;
           const html = `
-            <div class="bg-neutral-850 border border-neutral-750 rounded-lg p-2">
+            <div class="bg-neutral-850 border border-neutral-750 rounded-lg p-2" style="pointer-events: none;">
               <div class="flex items-center gap-2 mb-1">
                 ${flagSVG}
                 <span class="text-sm font-medium text-white">${city}</span>

@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
-import { GetSessionsResponse } from "../../../../api/analytics/userSessions";
-import { APIResponse } from "../../../../api/types";
-import { authedFetch, getQueryParams } from "../../../../api/utils";
-import { getFilteredFilters, SESSION_PAGE_FILTERS, useStore } from "../../../../lib/store";
-import { useTimelineStore } from "../timelineStore";
-import { calculateWindowSize } from "../timelineUtils";
+import { GetSessionsResponse } from "../../../../../api/analytics/userSessions";
+import { APIResponse } from "../../../../../api/types";
+import { authedFetch, getQueryParams } from "../../../../../api/utils";
+import { getFilteredFilters, SESSION_PAGE_FILTERS, useStore } from "../../../../../lib/store";
+import { useTimelineStore } from "../../timelineStore";
+import { calculateWindowSize } from "../../timelineUtils";
 
 export function useTimelineSessions() {
   const { time, site } = useStore();
