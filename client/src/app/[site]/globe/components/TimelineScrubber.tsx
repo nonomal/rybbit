@@ -18,10 +18,7 @@ export function TimelineScrubber() {
   // Generate time windows for the slider
   const timeWindows = useMemo(() => {
     if (!timeRange) return [];
-    const start = performance.now();
     const timeWindows = generateTimeWindows(timeRange.start, timeRange.end, windowSize);
-    const end = performance.now();
-    console.log(`generateTimeWindows took ${end - start}ms`);
     return timeWindows;
   }, [timeRange, windowSize]);
 

@@ -93,7 +93,6 @@ export function getSessionCountsPerWindow(
   windowSize: number
 ): number[] {
   // Parse all session times once upfront
-  const start = performance.now();
   const parsedSessions = sessions.map(session => ({
     start: DateTime.fromSQL(session.session_start, { zone: "utc" }).toLocal(),
     end: DateTime.fromSQL(session.session_end, { zone: "utc" }).toLocal(),
@@ -101,11 +100,6 @@ export function getSessionCountsPerWindow(
 
   // Sort sessions by start time for efficient searching
   parsedSessions.sort((a, b) => a.start.toMillis() - b.start.toMillis());
-
-  const end = performance.now();
-  console.log(`getSessionCountsPerWindow parsing+sorting took ${end - start}ms`);
-
-  const start2 = performance.now();
 
   // Binary search to find first session that could overlap with a window
   const findFirstOverlapping = (windowStart: DateTime): number => {
@@ -149,9 +143,6 @@ export function getSessionCountsPerWindow(
 
     return count;
   });
-
-  const end2 = performance.now();
-  console.log(`getSessionCountsPerWindow counting took ${end2 - start2}ms`);
 
   return counts;
 }

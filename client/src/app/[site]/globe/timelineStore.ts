@@ -61,12 +61,7 @@ export function useActiveSessions(): GetSessionsResponse {
 
   return useMemo(() => {
     if (!currentTime || allSessions.length === 0) return [];
-
-    const start = performance.now();
     const activeSessions = getActiveSessions(allSessions, currentTime, windowSize);
-    const end = performance.now();
-    console.log(`getActiveSessions took ${end - start}ms`);
-
     return activeSessions;
   }, [currentTime, windowSize, allSessions]);
 }

@@ -71,6 +71,12 @@ export default function GlobePage() {
 
   useLayerVisibility(map, mapView, mapLoaded);
 
+  console.info({
+    NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+    NEXT_PUBLIC_CLOUD: process.env.NEXT_PUBLIC_CLOUD,
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  });
+
   return (
     <DisabledOverlay message="Globe" featurePath="globe">
       <div className="relative w-full h-dvh overflow-hidden">
