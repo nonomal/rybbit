@@ -5,6 +5,7 @@ import { TimelineSlider } from "../../../../components/ui/timeline-slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../../components/ui/tooltip";
 import { useTimelineStore, useActiveSessions } from "../timelineStore";
 import { formatTimelineTime, generateTimeWindows, getSessionCountsPerWindow } from "../timelineUtils";
+import { MAX_PAGES, PAGE_SIZE } from "../hooks/timelineLayer/timelineLayerConstants";
 
 export function TimelineScrubber() {
   const { currentTime, timeRange, windowSize, setCurrentTime, allSessions, isLoading, hasMoreData } =
@@ -201,7 +202,7 @@ export function TimelineScrubber() {
         <div className="flex items-center gap-3">
           <div className="text-xs text-neutral-400 flex items-center gap-1 whitespace-nowrap">
             <span className="font-bold text-accent-400">
-              {activeSessions.length} / {allSessions.length}
+              {activeSessions.length.toLocaleString()} / {allSessions.length.toLocaleString()}
             </span>{" "}
             sessions
             {hasMoreData && (
@@ -211,7 +212,10 @@ export function TimelineScrubber() {
                     <AlertTriangle className="w-3.5 h-3.5 text-yellow-500 ml-1" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Showing only the first 50,000 sessions. More data may be available.</p>
+                    <p>
+                      Showing only the first {(MAX_PAGES * PAGE_SIZE).toLocaleString()} sessions. More data may be
+                      available.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

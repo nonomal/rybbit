@@ -7,6 +7,7 @@ import { authedFetch, getQueryParams } from "../../../../../api/utils";
 import { getFilteredFilters, SESSION_PAGE_FILTERS, useStore } from "../../../../../lib/store";
 import { useTimelineStore } from "../../timelineStore";
 import { calculateWindowSize } from "../../timelineUtils";
+import { MAX_PAGES, PAGE_SIZE } from "./timelineLayerConstants";
 
 export function useTimelineSessions() {
   const { time, site } = useStore();
@@ -19,16 +20,14 @@ export function useTimelineSessions() {
     queryKey: ["timeline-sessions", time, site, filteredFilters],
     queryFn: async () => {
       const allSessions = [];
-      const maxPages = 5;
-      const limit = 10000;
       let reachedMaxPages = false;
 
-      for (let page = 1; page <= maxPages; page++) {
+      for (let page = 1; page <= MAX_PAGES; page++) {
         const requestParams = {
           ...getQueryParams(time),
           filters: filteredFilters,
           page,
-          limit,
+          limit: PAGE_SIZE,
         };
 
         const response = await authedFetch<APIResponse<GetSessionsResponse>>(`/sessions/${site}`, requestParams);
@@ -37,12 +36,12 @@ export function useTimelineSessions() {
           allSessions.push(...response.data);
 
           // If we got fewer results than the limit, we've reached the end
-          if (response.data.length < limit) {
+          if (response.data.length < PAGE_SIZE) {
             break;
           }
 
           // If we're on the last page and got a full page, there might be more
-          if (page === maxPages && response.data.length === limit) {
+          if (page === MAX_PAGES && response.data.length === PAGE_SIZE) {
             reachedMaxPages = true;
           }
         } else {
