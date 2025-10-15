@@ -151,31 +151,45 @@ export function useOpenLayersTimelineLayer({ mapInstanceRef, mapViewRef, mapView
         source: vectorSource,
       });
 
-      // Style function for clusters (only show clusters with size >= MIN_CLUSTER_SIZE)
+      // Style function for clusters (matching Mapbox styling)
       const styleFunction = (feature: FeatureLike) => {
         const clusterFeatures = feature.get("features");
         const size = clusterFeatures ? clusterFeatures.length : 1;
 
         if (size >= MIN_CLUSTER_SIZE) {
-          // Cluster style
-          const radius = Math.min(20 + size / 5, 40);
+          // Determine color based on cluster size (matching Mapbox steps)
+          let color: string;
+          if (size >= 100) {
+            color = "#34d399"; // green-400
+          } else if (size >= 30) {
+            color = "#10b981"; // green-500
+          } else {
+            color = "#059669"; // green-600
+          }
+
+          // Determine radius based on cluster size (matching Mapbox steps)
+          let radius: number;
+          if (size >= 30) {
+            radius = 25;
+          } else if (size >= 10) {
+            radius = 20;
+          } else {
+            radius = 15;
+          }
+
           return new Style({
             image: new Circle({
               radius,
               fill: new Fill({
-                color: "rgba(110, 231, 183, 0.6)",
-              }),
-              stroke: new Stroke({
-                color: "rgba(110, 231, 183, 1)",
-                width: 2,
+                color,
               }),
             }),
             text: new Text({
               text: size.toString(),
               fill: new Fill({
-                color: "#fff",
+                color: "#ffffff",
               }),
-              font: "bold 12px sans-serif",
+              font: "bold 14px sans-serif",
             }),
           });
         } else {
