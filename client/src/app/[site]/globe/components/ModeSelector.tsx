@@ -1,6 +1,7 @@
 import { Clock, Globe2, HouseIcon, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGlobeStore } from "../globeStore";
+import { IS_CLOUD } from "../../../../lib/const";
 
 export type MapView = "countries" | "subdivisions" | "coordinates" | "timeline";
 
@@ -32,12 +33,14 @@ export default function MapViewSelector() {
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto w-full">
-      <button
-        className="text-xs font-medium rounded-lg bg-neutral-900/60 text-neutral-200 backdrop-blur-sm p-1.5 border border-white/10 hover:bg-neutral-700/60 hover:text-white transition-all"
-        onClick={() => setMapMode(mapMode === "2D" ? "3D" : "2D")}
-      >
-        {mapMode === "2D" ? "2D" : "3D"}
-      </button>
+      {IS_CLOUD && (
+        <button
+          className="text-xs font-medium rounded-lg bg-neutral-900/60 text-neutral-200 backdrop-blur-sm p-1.5 border border-white/10 hover:bg-neutral-700/60 hover:text-white transition-all"
+          onClick={() => setMapMode(mapMode === "2D" ? "3D" : "2D")}
+        >
+          {mapMode === "2D" ? "2D" : "3D"}
+        </button>
+      )}
       <div className="flex items-center gap-0.5 rounded-lg bg-neutral-900/40 backdrop-blur-sm p-0.5 border border-white/10">
         <TabButton
           active={mapView === "timeline"}
