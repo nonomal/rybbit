@@ -10,29 +10,11 @@ export async function registerTurnstileMiddleware(
   isCloud: boolean,
   logger: any
 ) {
-  // Custom body parser that preserves the raw body for both our middleware and better-auth
-  fastify.addContentTypeParser(
-    "application/json",
-    { parseAs: "buffer" },
-    async (_request, payload: Buffer, done) => {
-      try {
-        const bodyString = payload.toString("utf-8");
-        const body = JSON.parse(bodyString);
-        // Store both parsed and raw for later use
-        done(null, { parsed: body, raw: bodyString, buffer: payload });
-      } catch (error) {
-        done(error as Error, undefined);
-      }
-    }
-  );
-
   // Turnstile verification middleware for email signup (cloud only)
   fastify.addHook("preHandler", async (request: FastifyRequest, reply: FastifyReply) => {
     // Only verify Turnstile for email signup in cloud mode
     if (isCloud && request.url === "/api/auth/sign-up/email" && request.method === "POST") {
       try {
-        const rawBuffer = (request.body as any)?.buffer;
-
         // Read the Turnstile token from the custom header
         const turnstileToken = request.headers["x-turnstile-token"] as string;
 
@@ -57,14 +39,6 @@ export async function registerTurnstileMiddleware(
         }
 
         logger.info("Turnstile verification successful");
-
-        // Make the raw buffer available to better-auth by recreating a readable stream
-        if (rawBuffer) {
-          const { Readable } = await import("stream");
-          const stream = Readable.from(rawBuffer);
-          // Replace the request stream with a fresh one that better-auth can read
-          Object.assign(request.raw, stream);
-        }
       } catch (error) {
         logger.error("Error in Turnstile verification:", error);
         return reply.status(500).send({
