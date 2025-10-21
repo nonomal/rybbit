@@ -14,6 +14,12 @@
 <a href="https://rybbit.io/" target="_blank">Rybbit</a> is the modern open source and privacy friendly alternative to Google Analytics. It takes only a couple minutes to setup and is super intuitive to use.
 
 <p align="center">
+  <a href="https://www.producthunt.com/products/rybbit?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_source=badge-rybbit" target="_blank">
+    <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=1028220&theme=standard&period=daily" alt="Rybbit - Open Source Google Analytics Replacement | Product Hunt" width="250" height="54" />
+  </a>
+</p>
+
+<p align="center">
   <strong><a href="https://demo.rybbit.io/1">🔍 View Live Demo</a></strong> - See Rybbit running on a real-life production site with over a million visits a month.
 </p>
 
