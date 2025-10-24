@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,121 +26,140 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Upload, FileText, AlertCircle, CheckCircle2, Clock, Loader2, Database, Trash2 } from "lucide-react";
 import { useGetSiteImports, useImportSiteData, useDeleteSiteImport } from "@/api/admin/import";
-import { SplitDateRangePicker, DateRange } from "@/components/SplitDateRangePicker";
+import { SplitDateRangePicker } from "@/components/SplitDateRangePicker";
 
 interface ImportManagerProps {
   siteId: number;
   disabled: boolean;
 }
 
-interface FileValidationError {
-  type: "size" | "type" | "name";
-  message: string;
-}
-
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 const ALLOWED_FILE_TYPES = ["text/csv"];
 const ALLOWED_EXTENSIONS = [".csv"];
-const DATA_SOURCES = [{ value: "umami", label: "Umami" }];
+const DATA_SOURCES = [{ value: "umami", label: "Umami" }] as const;
+
+// Validation schema matching backend requirements
+const importFormSchema = z
+  .object({
+    source: z.enum(["umami"], { required_error: "Please select a data source" }),
+    file: z
+      .custom<FileList>()
+      .refine(files => files?.length === 1, "Please select a file")
+      .refine(
+        files => {
+          const file = files?.[0];
+          return file && file.size <= MAX_FILE_SIZE;
+        },
+        `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`
+      )
+      .refine(files => {
+        const file = files?.[0];
+        if (!file) return false;
+        const extension = "." + file.name.split(".").pop()?.toLowerCase();
+        return ALLOWED_EXTENSIONS.includes(extension) || ALLOWED_FILE_TYPES.includes(file.type);
+      }, "Only CSV files are accepted")
+      .refine(files => {
+        const file = files?.[0];
+        return file && file.name.length <= 255;
+      }, "Filename is too long"),
+    dateRange: z
+      .object({
+        startDate: z.custom<DateTime>().optional(),
+        endDate: z.custom<DateTime>().optional(),
+      })
+      .refine(
+        data => {
+          if (!data.startDate || !data.endDate) return true;
+          return data.startDate <= data.endDate;
+        },
+        { message: "Start date must be before or equal to end date", path: ["startDate"] }
+      )
+      .refine(
+        data => {
+          if (!data.startDate) return true;
+          const today = DateTime.utc().startOf("day");
+          return data.startDate <= today;
+        },
+        { message: "Start date cannot be in the future", path: ["startDate"] }
+      )
+      .refine(
+        data => {
+          if (!data.endDate) return true;
+          const today = DateTime.utc().startOf("day");
+          return data.endDate <= today;
+        },
+        { message: "End date cannot be in the future", path: ["endDate"] }
+      ),
+  })
+  .refine(data => data.file?.[0] !== undefined, {
+    message: "Please select a file",
+    path: ["file"],
+  });
+
+type ImportFormData = z.infer<typeof importFormSchema>;
 
 export function ImportManager({ siteId, disabled }: ImportManagerProps) {
-  const [file, setFile] = useState<File | null>(null);
-  const [source, setSource] = useState<string>("");
-  const [dateRange, setDateRange] = useState<DateRange>({});
-  const [fileError, setFileError] = useState<FileValidationError | null>(null);
-  const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [deleteImportId, setDeleteImportId] = useState<string | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data, isLoading, error } = useGetSiteImports(siteId);
   const mutation = useImportSiteData(siteId);
   const deleteMutation = useDeleteSiteImport(siteId);
 
-  const resetFileInput = () => {
-    setFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  const {
+    control,
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<ImportFormData>({
+    resolver: zodResolver(importFormSchema),
+    mode: "onChange",
+    defaultValues: {
+      source: "" as "umami",
+      dateRange: {},
+    },
+  });
 
-  const validateFile = (file: File): FileValidationError | null => {
-    if (file.size > MAX_FILE_SIZE) {
-      return {
-        type: "size",
-        message: `File size (${(file.size / 1024 / 1024).toFixed(1)}MB) exceeds the maximum limit of 100MB.`,
-      };
-    }
+  const fileList = watch("file");
+  const selectedFile = fileList?.[0];
 
-    if (!ALLOWED_FILE_TYPES.includes(file.type) && file.type !== "") {
-      return {
-        type: "type",
-        message: "Invalid file type. Only CSV files are accepted.",
-      };
-    }
+  const onSubmit = (data: ImportFormData) => {
+    const file = data.file?.[0];
+    if (!file) return;
 
-    const extension = "." + file.name.split(".").pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.includes(extension)) {
-      return {
-        type: "type",
-        message: "Invalid file extension. Only .csv files are accepted.",
-      };
-    }
-
-    if (file.name.length > 255) {
-      return {
-        type: "name",
-        message: "Filename is too long. Please use a shorter filename.",
-      };
-    }
-
-    return null;
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    setFileError(null);
-
-    if (selectedFile) {
-      const validationError = validateFile(selectedFile);
-      if (validationError) {
-        setFileError(validationError);
-        resetFileInput();
-        return;
-      }
-      setFile(selectedFile);
-    } else {
-      setFile(null);
-    }
-  };
-
-  const handleImportClick = () => {
-    if (file && file.size > 50 * 1024 * 1024) {
+    // Show confirmation dialog for large files
+    if (file.size > 50 * 1024 * 1024) {
       setShowConfirmDialog(true);
     } else {
-      handleImport();
+      executeImport(data);
     }
   };
 
-  const handleImport = () => {
-    if (file && source) {
-      const startDate = dateRange.startDate ? dateRange.startDate.toFormat("yyyy-MM-dd") : undefined;
-      const endDate = dateRange.endDate ? dateRange.endDate.toFormat("yyyy-MM-dd") : undefined;
+  const executeImport = (data: ImportFormData) => {
+    const file = data.file?.[0];
+    if (!file) return;
 
-      mutation.mutate({
+    const startDate = data.dateRange.startDate?.toFormat("yyyy-MM-dd");
+    const endDate = data.dateRange.endDate?.toFormat("yyyy-MM-dd");
+
+    mutation.mutate(
+      {
         file,
-        source,
+        source: data.source,
         startDate,
         endDate,
-      });
+      },
+      {
+        onSuccess: () => {
+          reset();
+        },
+      }
+    );
 
-      resetFileInput();
-      setFileError(null);
-      setSource("");
-      setDateRange({});
-      setShowConfirmDialog(false);
-    }
+    setShowConfirmDialog(false);
   };
 
   const handleDeleteClick = (importId: string) => {
@@ -199,7 +222,8 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
     });
   }, [data?.data]);
 
-  const isImportDisabled = !file || !source || mutation.isPending || disabled || !!fileError;
+  const formData = watch();
+  const isImportDisabled = !isValid || mutation.isPending || disabled;
 
   return (
     <div className="space-y-6">
@@ -213,78 +237,91 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
           <CardDescription>Import data from other analytics platforms. Supports CSV files up to 100MB.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Data Source Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="source" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              Data Source
-            </Label>
-            <Select value={source} onValueChange={setSource} disabled={disabled || mutation.isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select data source" />
-              </SelectTrigger>
-              <SelectContent>
-                {DATA_SOURCES.map(dataSource => (
-                  <SelectItem key={dataSource.value} value={dataSource.value}>
-                    {dataSource.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Data Source Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="source" className="flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                Data Source
+              </Label>
+              <Controller
+                name="source"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange} disabled={disabled || mutation.isPending}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select data source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DATA_SOURCES.map(dataSource => (
+                        <SelectItem key={dataSource.value} value={dataSource.value}>
+                          {dataSource.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.source && <p className="text-sm text-red-600">{errors.source.message}</p>}
+            </div>
 
-          {/* Date Range Picker */}
-          <SplitDateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            label="Date Range (Optional)"
-            disabled={disabled || mutation.isPending}
-            showDescription={true}
-            clearButtonText="Clear dates"
-            className="space-y-2"
-          />
-
-          <Separator />
-
-          {/* File Upload */}
-          <div className="space-y-2">
-            <Label htmlFor="file" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              CSV File
-            </Label>
-            <Input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileChange}
-              disabled={disabled || mutation.isPending}
+            {/* Date Range Picker */}
+            <Controller
+              name="dateRange"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <SplitDateRangePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    label="Date Range (Optional)"
+                    disabled={disabled || mutation.isPending}
+                    showDescription={true}
+                    clearButtonText="Clear dates"
+                    className="space-y-2"
+                  />
+                  {errors.dateRange?.startDate && (
+                    <p className="text-sm text-red-600">{errors.dateRange.startDate.message}</p>
+                  )}
+                  {errors.dateRange?.endDate && (
+                    <p className="text-sm text-red-600">{errors.dateRange.endDate.message}</p>
+                  )}
+                </div>
+              )}
             />
-          </div>
 
-          {/* File Validation Error */}
-          {fileError && (
-            <Alert variant="destructive">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{fileError.message}</AlertDescription>
-              </div>
-            </Alert>
-          )}
+            <Separator />
 
-          {/* Import Button */}
-          <Button onClick={handleImportClick} disabled={isImportDisabled} className="w-full sm:w-auto">
-            {mutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Import
-              </>
-            )}
-          </Button>
+            {/* File Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="file" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                CSV File
+              </Label>
+              <Input type="file" accept=".csv" {...register("file")} disabled={disabled || mutation.isPending} />
+              {selectedFile && (
+                <p className="text-sm text-muted-foreground">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+              {errors.file && <p className="text-sm text-red-600">{errors.file.message as string}</p>}
+            </div>
+
+            {/* Import Button */}
+            <Button type="submit" disabled={isImportDisabled} className="w-full sm:w-auto">
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Importing...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Import
+                </>
+              )}
+            </Button>
+          </form>
 
           {/* Import Error */}
           {mutation.isError && (
@@ -431,13 +468,13 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Large File Import</AlertDialogTitle>
             <AlertDialogDescription>
-              You're about to import a large file. This may take several minutes to process. Are you sure you want to
-              continue?
+              You're about to import a large file ({selectedFile ? (selectedFile.size / 1024 / 1024).toFixed(2) : "?"}{" "}
+              MB). This may take several minutes to process. Are you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleImport}>Yes, Import File</AlertDialogAction>
+            <AlertDialogAction onClick={() => executeImport(formData)}>Yes, Import File</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
