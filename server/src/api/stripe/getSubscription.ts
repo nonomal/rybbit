@@ -34,19 +34,6 @@ export async function getSubscriptionInner(organizationId: string) {
     return null;
   }
 
-  if (org.name.includes("AppSumo")) {
-    return {
-      id: null,
-      planName: "free",
-      status: "active",
-      eventLimit: 1000000,
-      currentPeriodEnd: getStartOfNextMonth(),
-      currentPeriodStart: getStartOfMonth(),
-      monthlyEventCount: org.monthlyEventCount || 0,
-      appSumoPlan: "1m",
-    };
-  }
-
   // Check if organization has an active Stripe subscription
   if (org.stripeCustomerId) {
     // 2. List active subscriptions for the customer from Stripe

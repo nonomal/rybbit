@@ -117,9 +117,6 @@ class UsageService {
     if (orgData.name === "tomato 2" || orgData.name === "Zam") {
       return [Infinity, this.getStartOfMonth()];
     }
-    if (orgData.name.includes("AppSumo")) {
-      return [1000000, this.getStartOfMonth()];
-    }
     if (!orgData.stripeCustomerId) {
       // No Stripe customer ID, use default limit and start of current month
       return [DEFAULT_EVENT_LIMIT, this.getStartOfMonth()];
