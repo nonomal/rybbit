@@ -44,22 +44,22 @@ const importFormSchema = z.object({
   source: z.enum(["umami"], { required_error: "Please select a data source" }),
   file: z
     .custom<FileList>()
-    .refine(files => files?.length === 1, "Please select a file")
+    .refine(files => files.length === 1, "Please select a file")
     .refine(
       files => {
-        const file = files?.[0];
+        const file = files[0];
         return file && file.size <= MAX_FILE_SIZE;
       },
       `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`
     )
     .refine(files => {
-      const file = files?.[0];
+      const file = files[0];
       if (!file) return false;
       const extension = "." + file.name.split(".").pop()?.toLowerCase();
       return ALLOWED_EXTENSIONS.includes(extension) || ALLOWED_FILE_TYPES.includes(file.type);
     }, "Only CSV files are accepted")
     .refine(files => {
-      const file = files?.[0];
+      const file = files[0];
       return file && file.name.length <= 255;
     }, "Filename is too long"),
   dateRange: z
@@ -120,10 +120,10 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
   });
 
   const fileList = watch("file");
-  const selectedFile = fileList?.[0];
+  const selectedFile = fileList[0];
 
   const onSubmit = (data: ImportFormData) => {
-    const file = data.file?.[0];
+    const file = data.file[0];
     if (!file) return;
 
     // Show confirmation dialog for large files
@@ -135,7 +135,7 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
   };
 
   const executeImport = (data: ImportFormData) => {
-    const file = data.file?.[0];
+    const file = data.file[0];
     if (!file) return;
 
     const startDate = data.dateRange.startDate?.toFormat("yyyy-MM-dd");
