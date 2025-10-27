@@ -120,7 +120,7 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
   });
 
   const fileList = watch("file");
-  const selectedFile = fileList[0];
+  const selectedFile = fileList?.[0];
 
   const onSubmit = (data: ImportFormData) => {
     const file = data.file[0];
