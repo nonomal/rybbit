@@ -35,7 +35,7 @@ interface ImportManagerProps {
   disabled: boolean;
 }
 
-const MAX_FILE_SIZE = IS_CLOUD ? 500 * 1024 * 1024 : Infinity; // 500 MB for cloud, infinite for self-hosted
+const MAX_FILE_SIZE = IS_CLOUD ? 500 * 1024 * 1024 : 50 * 1024 * 1024 * 1024; // 500 MB for cloud, 50 GB for self-hosted
 const ALLOWED_FILE_TYPES = ["text/csv"];
 const ALLOWED_EXTENSIONS = [".csv"];
 const PLATFORMS = [{ value: "umami", label: "Umami" }] as const;
@@ -47,7 +47,6 @@ const importFormSchema = z.object({
     .refine(files => files.length === 1, "Please select a file")
     .refine(
       files => {
-        if (!IS_CLOUD) return true;
         const file = files[0];
         return file && file.size <= MAX_FILE_SIZE;
       },

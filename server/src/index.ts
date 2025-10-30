@@ -164,7 +164,7 @@ server.register(cors, {
 
 server.register(multipart, {
   limits: {
-    fileSize: IS_CLOUD ? 500 * 1024 * 1024 : undefined, // 500 MB for cloud, infinite for self-hosted
+    fileSize: IS_CLOUD ? 500 * 1024 * 1024 : 50 * 1024 * 1024 * 1024, // 500 MB for cloud, 50 GB for self-hosted
     files: 1, // only allow 1 file
   },
 });
