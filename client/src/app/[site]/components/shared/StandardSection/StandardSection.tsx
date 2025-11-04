@@ -8,7 +8,7 @@ import { usePaginatedSingleCol } from "../../../../../api/analytics/useSingleCol
 import { SingleColResponse } from "../../../../../api/analytics/useSingleCol";
 import { CardLoader } from "../../../../../components/ui/card";
 import { Row } from "./Row";
-import { Skeleton } from "./Skeleton";
+import { StandardSkeleton } from "./Skeleton";
 import { StandardSectionDialog } from "./StandardSectionDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../../components/ui/tooltip";
 import Link from "next/link";
@@ -62,7 +62,7 @@ export function StandardSection({
       )}
       <div className="flex flex-col gap-2 max-h-[344px] overflow-y-auto">
         {isLoading ? (
-          <Skeleton />
+          <StandardSkeleton />
         ) : error ? (
           <div className="py-6 flex-1 flex flex-col items-center justify-center gap-3 transition-all">
             <AlertCircle className="text-amber-400 w-8 h-8" />

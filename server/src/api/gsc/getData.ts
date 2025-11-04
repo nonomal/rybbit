@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { refreshGSCToken } from "./utils.js";
 import { getUserHasAccessToSite } from "../../lib/auth-utils.js";
 import { db } from "../../db/postgres/postgres.js";
+import countries from "i18n-iso-countries";
 
 /**
  * Fetches data from Google Search Console API with support for multiple dimensions
@@ -73,13 +74,22 @@ export async function getGSCData(req: FastifyRequest<GetGSCDataRequest>, res: Fa
     const data: GSCResponse = await gscResponse.json();
 
     // Transform the response to a simpler format with unified "name" field
-    const results = (data.rows || []).map(row => ({
-      name: row.keys[0],
-      clicks: row.clicks,
-      impressions: row.impressions,
-      ctr: row.ctr,
-      position: row.position,
-    }));
+    const results = (data.rows || []).map(row => {
+      let name = row.keys[0];
+
+      // Convert country codes from alpha-3 to alpha-2 for the "country" dimension
+      if (dimension === "country" && name) {
+        name = countries.alpha3ToAlpha2(name.toUpperCase()) || name;
+      }
+
+      return {
+        name,
+        clicks: row.clicks,
+        impressions: row.impressions,
+        ctr: row.ctr,
+        position: row.position,
+      };
+    });
 
     return res.send({ data: results });
   } catch (error) {

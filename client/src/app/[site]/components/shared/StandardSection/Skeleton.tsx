@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-export const Skeleton = memo(() => {
+export const StandardSkeleton = memo(() => {
   // Generate widths following Pareto principle with top item at 100%
   const widths = Array.from({ length: 10 }, (_, i) => {
     if (i === 0) {

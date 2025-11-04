@@ -1,11 +1,13 @@
+import { SquareArrowOutUpRight } from "lucide-react";
 import { useState } from "react";
+import { useConnectGSC, useGSCConnection } from "../../../../../api/gsc/useGSCConnection";
+import { GSCDimension, useGSCData } from "../../../../../api/gsc/useGSCData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../../components/ui/basic-tabs";
-import { Card, CardContent, CardLoader } from "../../../../../components/ui/card";
 import { Button } from "../../../../../components/ui/button";
-import { useGSCConnection, useConnectGSC } from "../../../../../api/gsc/useGSCConnection";
-import { useGSCData, GSCDimension } from "../../../../../api/gsc/useGSCData";
-import { ExternalLink, SquareArrowOutUpRight } from "lucide-react";
-import { formatter } from "../../../../../lib/utils";
+import { Card, CardContent, CardLoader } from "../../../../../components/ui/card";
+import { formatter, getCountryName } from "../../../../../lib/utils";
+import { CountryFlag } from "../../../components/shared/icons/CountryFlag";
+import { StandardSkeleton } from "../../../components/shared/StandardSection/Skeleton";
 
 type Tab = "queries" | "pages" | "countries" | "devices";
 
@@ -53,37 +55,38 @@ function DataList({ dimension, label, renderName }: DataListProps) {
               <div className="w-24 text-right">Impressions</div>
             </div>
           </div>
-          {data && data.length > 0
-            ? data.slice(0, 10).map((item, index) => {
-                const percentage = item.clicks / totalClicks;
-
-                return (
+          {data && data.length > 0 ? (
+            data.slice(0, 10).map((item, index) => {
+              const percentage = item.clicks / totalClicks;
+              return (
+                <div
+                  key={index}
+                  className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-800/30 rounded px-2"
+                >
                   <div
-                    key={index}
-                    className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-800/30 rounded px-2"
-                  >
-                    <div
-                      className="absolute inset-0 bg-dataviz py-2 opacity-25 rounded-md"
-                      style={{ width: `${percentage * ratio}%` }}
-                    />
-                    <div className="flex-1 truncate overflow-x-hidden">
-                      {renderName ? renderName(item.name) : item.name}
-                    </div>
-                    <div className="flex flex-row gap-2">
-                      <div className="w-20 text-right pr-1">{formatter(item.clicks)}</div>
-                      <div className="w-24 text-right pr-1">{formatter(item.impressions)}</div>
-                    </div>
+                    className="absolute inset-0 bg-dataviz py-2 opacity-25 rounded-md"
+                    style={{ width: `${percentage * ratio}%` }}
+                  />
+                  <div className="flex-1 truncate overflow-x-hidden z-10">
+                    {renderName ? renderName(item.name) : item.name}
                   </div>
-                );
-              })
-            : !isLoading && (
-                <div className="text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
-                  <div className="text-sm text-neutral-500">
-                    <div>No {label.toLowerCase()} data available for the selected date range</div>
-                    <div className="text-xs mt-2">Google Search Console data has a 2-3 day delay</div>
+                  <div className="flex flex-row gap-2 z-10">
+                    <div className="w-20 text-right pr-1">{formatter(item.clicks)}</div>
+                    <div className="w-24 text-right pr-1">{formatter(item.impressions)}</div>
                   </div>
                 </div>
-              )}
+              );
+            })
+          ) : isLoading ? (
+            <StandardSkeleton />
+          ) : (
+            <div className="text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
+              <div className="text-sm text-neutral-500">
+                <div>No {label.toLowerCase()} data available for the selected date range</div>
+                <div className="text-xs mt-2">Google Search Console data has a 2-3 day delay</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -145,7 +148,16 @@ export function SearchConsole() {
                 />
               </TabsContent>
               <TabsContent value="countries">
-                <DataList dimension="country" label="Country" />
+                <DataList
+                  dimension="country"
+                  label="Country"
+                  renderName={name => (
+                    <div className="flex items-center gap-2">
+                      <CountryFlag country={name} />
+                      {getCountryName(name)}
+                    </div>
+                  )}
+                />
               </TabsContent>
               <TabsContent value="devices">
                 <DataList dimension="device" label="Device" />
