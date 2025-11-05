@@ -10,6 +10,7 @@ import { CountryFlag } from "../../../components/shared/icons/CountryFlag";
 import { StandardSkeleton } from "../../../components/shared/StandardSection/Skeleton";
 import { SearchConsoleDialog } from "./SearchConsoleDialog";
 import { SiGoogle } from "@icons-pack/react-simple-icons";
+import { round } from "lodash";
 
 type Tab = "queries" | "pages" | "countries" | "devices";
 
@@ -66,7 +67,7 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
               return (
                 <div
                   key={index}
-                  className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-850 rounded px-2"
+                  className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-850 rounded px-2 group"
                 >
                   <div
                     className="absolute inset-0 bg-dataviz py-2 opacity-25 rounded-md"
@@ -76,7 +77,10 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
                     {renderName ? renderName(item.name) : item.name}
                   </div>
                   <div className="flex flex-row gap-2 z-10">
-                    <div className="w-20 text-right pr-1">{formatter(item.clicks)}</div>
+                    <div className="w-28 text-right pr-1 flex flex-row gap-2 items-center justify-end">
+                      <div className="hidden group-hover:block text-neutral-400">{round(percentage * 100, 1)}%</div>
+                      {formatter(item.clicks)}
+                    </div>
                     <div className="w-24 text-right pr-1">{formatter(item.impressions)}</div>
                   </div>
                 </div>
