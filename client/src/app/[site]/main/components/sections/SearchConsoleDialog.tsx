@@ -9,7 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useDebounce } from "@uidotdev/usehooks";
-import { ChevronDown, ChevronUp, Loader2, Search, SquareArrowOutUpRight } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Search } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { GSCData, GSCDimension, useGSCData } from "../../../../../api/gsc/useGSCData";
 import { cn } from "../../../../../lib/utils";
@@ -47,14 +47,6 @@ export function SearchConsoleDialog({ title, dimension, renderName, expanded, cl
         cell: ({ row }) => (
           <div className="flex flex-row gap-1 items-center text-left">
             {renderName ? renderName(row.original.name) : row.original.name}
-            {dimension === "page" && (
-              <a href={row.original.name} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                <SquareArrowOutUpRight
-                  className="ml-0.5 w-3.5 h-3.5 text-neutral-300 hover:text-neutral-100"
-                  strokeWidth={3}
-                />
-              </a>
-            )}
           </div>
         ),
       }),
@@ -73,9 +65,7 @@ export function SearchConsoleDialog({ title, dimension, renderName, expanded, cl
       columnHelper.accessor("ctr", {
         header: "CTR",
         cell: info => (
-          <div className="flex flex-row gap-1 items-center sm:justify-end">
-            {(info.getValue() * 100).toFixed(1)}%
-          </div>
+          <div className="flex flex-row gap-1 items-center sm:justify-end">{(info.getValue() * 100).toFixed(1)}%</div>
         ),
       }),
       columnHelper.accessor("position", {
