@@ -1,66 +1,50 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  BarChart3,
-  Users,
-  Eye,
-  Shield,
-  Zap,
-  Globe,
-  TrendingUp,
-  Filter,
-  Clock,
-  CheckCircle,
-  ArrowRight,
-  Smartphone,
-  Languages,
-  Share2,
-  PieChart,
-  UserPlus,
-  Link2,
-  Grid3x3,
-  Layers,
-  Tag,
-  ChartLine,
-  Activity,
-  ArrowLeftRight,
-  Sparkles,
-  Target,
-  UserCheck,
-  DollarSign,
-  Route,
-  TrendingDown,
-  ShieldCheck,
-  UserX,
-  Cookie,
-  Database,
-  Settings,
-  Download,
-  Upload,
-  Mail,
-  Video,
-  Gauge,
-  AlertTriangle,
-  Search,
-  ShieldAlert,
-  MousePointerClick,
-  Lock,
-  UserCog,
-  Globe2,
-  MapPin,
-  MailQuestion,
-} from "lucide-react";
-import { EventTracking } from "@/components/Cards/EventTracking";
-import { GoalConversion } from "@/components/Cards/GoalConversion";
-import { RealTimeAnalytics } from "@/components/Cards/RealTimeAnalytics";
-import { UserBehaviorTrends } from "@/components/Cards/UserBehaviorTrends";
-import { UserFlowAnalysis } from "@/components/Cards/UserFlowAnalysis";
-import { UserProfiles } from "@/components/Cards/UserProfiles";
-import { UserSessions } from "@/components/Cards/UserSessions";
-import { SessionReplay } from "@/components/Cards/SessionReplay";
-import { WebVitals } from "@/components/Cards/WebVitals";
 import { TrackedButton } from "@/components/TrackedButton";
 import { DEFAULT_EVENT_LIMIT } from "@/lib/const";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowLeftRight,
+  ArrowRight,
+  Bot,
+  CheckCircle,
+  Clock,
+  Cookie,
+  Database,
+  Download,
+  Eye,
+  Funnel,
+  Gauge,
+  Globe,
+  Globe2,
+  Languages,
+  Layers,
+  Link2,
+  ListFilter,
+  Lock,
+  Mail,
+  MailQuestion,
+  MapPin,
+  MousePointerClick,
+  Rewind,
+  Route,
+  Search,
+  Settings,
+  Shield,
+  ShieldCheck,
+  Smartphone,
+  Tag,
+  Target,
+  TrendingUp,
+  Upload,
+  UserCheck,
+  UserCog,
+  Users,
+  UserX,
+  Video,
+  Zap,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Features - Rybbit Analytics",
@@ -68,7 +52,7 @@ export const metadata: Metadata = {
     "Powerful, privacy-friendly analytics features to help you understand your audience and grow your business. Real-time data, session replay, web vitals, and more.",
 };
 
-const analyticsFeatures = [
+const coreWebAnalyticsFeatures = [
   {
     icon: <Eye className="w-5 h-5" />,
     title: "Page views",
@@ -90,7 +74,7 @@ const analyticsFeatures = [
     description: "Discover where visitors come from to optimize your marketing channels.",
   },
   {
-    icon: <Globe className="w-5 h-5" />,
+    icon: <MapPin className="w-5 h-5" />,
     title: "Location",
     description: "Geographic data down to city level for global audience insights.",
   },
@@ -105,7 +89,7 @@ const analyticsFeatures = [
     description: "Know which languages your audience speaks to create targeted content.",
   },
   {
-    icon: <Filter className="w-5 h-5" />,
+    icon: <ListFilter className="w-5 h-5" />,
     title: "Filtering",
     description: "Slice and dice your data to uncover patterns and actionable insights.",
   },
@@ -115,7 +99,7 @@ const analyticsFeatures = [
     description: "Instant analytics updates—see what's happening on your site right now.",
   },
   {
-    icon: <Zap className="w-5 h-5" />,
+    icon: <MousePointerClick className="w-5 h-5" />,
     title: "Custom events",
     description: "Track sign-ups, purchases, downloads, and any custom user interaction.",
   },
@@ -135,6 +119,14 @@ const analyticsFeatures = [
     description: "Track link clicks to measure external campaign effectiveness.",
   },
   {
+    icon: <Bot className="w-5 h-5" />,
+    title: "Bot blocking",
+    description: "Automatically filter out bots and crawlers to keep your data clean.",
+  },
+];
+
+const advancedAnalyticsFeatures = [
+  {
     icon: <Video className="w-5 h-5" />,
     title: "Session replay",
     description: "Watch real user sessions to spot usability issues and improvement opportunities.",
@@ -145,57 +137,9 @@ const analyticsFeatures = [
     description: "Monitor Core Web Vitals to maintain fast, smooth user experiences.",
   },
   {
-    icon: <AlertTriangle className="w-5 h-5" />,
-    title: "Error tracking",
-    description: "Catch JavaScript errors as they happen with full context to fix them fast.",
-  },
-  {
-    icon: <Globe className="w-5 h-5" />,
-    title: "Globe views",
-    description: "Watch traffic flow across the world with stunning 3D globe visualizations.",
-  },
-  {
-    icon: <Search className="w-5 h-5" />,
-    title: "Google Search Console",
-    description: "See how organic search drives traffic alongside your analytics data.",
-  },
-  {
-    icon: <ShieldAlert className="w-5 h-5" />,
-    title: "Bot blocking",
-    description: "Automatically filter out bots and crawlers to keep your data clean.",
-  },
-  {
-    icon: <MousePointerClick className="w-5 h-5" />,
-    title: "User sessions",
-    description: "Follow complete user journeys from first visit to conversion.",
-  },
-];
-
-const insightsFeatures = [
-  {
-    icon: <ArrowLeftRight className="w-5 h-5" />,
-    title: "Compare",
-    description: "Benchmark metrics against previous periods to spot trends and measure growth.",
-  },
-  {
-    icon: <Sparkles className="w-5 h-5" />,
-    title: "Breakdown",
-    description: "Segment data by any dimension to reveal detailed user behavior patterns.",
-  },
-  {
-    icon: <TrendingDown className="w-5 h-5" />,
+    icon: <Funnel className="w-5 h-5" />,
     title: "Funnels",
     description: "Visualize conversion paths and pinpoint exactly where visitors drop off.",
-  },
-  {
-    icon: <UserCheck className="w-5 h-5" />,
-    title: "Retention",
-    description: "Track returning visitors to measure loyalty and engagement.",
-  },
-  {
-    icon: <Tag className="w-5 h-5" />,
-    title: "UTM",
-    description: "Analyze campaign performance with automatic UTM tracking and attribution.",
   },
   {
     icon: <Target className="w-5 h-5" />,
@@ -206,6 +150,41 @@ const insightsFeatures = [
     icon: <Route className="w-5 h-5" />,
     title: "Journey",
     description: "Map how users navigate your site from landing to conversion.",
+  },
+  {
+    icon: <Globe2 className="w-5 h-5" />,
+    title: "Globe views",
+    description: "Watch traffic flow across the world with stunning 3D globe visualizations.",
+  },
+  {
+    icon: <AlertTriangle className="w-5 h-5" />,
+    title: "Error tracking",
+    description: "Catch JavaScript errors as they happen with full context to fix them fast.",
+  },
+  {
+    icon: <Rewind className="w-5 h-5" />,
+    title: "User sessions",
+    description: "Follow complete user journeys from first visit to conversion.",
+  },
+  {
+    icon: <Search className="w-5 h-5" />,
+    title: "Google Search Console",
+    description: "See how organic search drives traffic alongside your analytics data.",
+  },
+  {
+    icon: <ArrowLeftRight className="w-5 h-5" />,
+    title: "Compare",
+    description: "Benchmark metrics against previous periods to spot trends and measure growth.",
+  },
+  {
+    icon: <Users className="w-5 h-5" />,
+    title: "User profiles",
+    description: "View complete user histories including all sessions, events, and interactions across their lifetime.",
+  },
+  {
+    icon: <UserCheck className="w-5 h-5" />,
+    title: "Retention",
+    description: "Track returning visitors to measure loyalty and engagement.",
   },
 ];
 
@@ -271,16 +250,16 @@ const cloudFeatures = [
     title: "Hosted in EU",
     description: "GDPR-compliant infrastructure hosted in European data centers for data sovereignty.",
   },
-  {
-    icon: <Upload className="w-5 h-5" />,
-    title: "Data import",
-    description: "Migrate from other platforms seamlessly with built-in import tools.",
-  },
-  {
-    icon: <Download className="w-5 h-5" />,
-    title: "Data export",
-    description: "Export complete raw data anytime. No lock-in, no summaries—just your data.",
-  },
+  // {
+  //   icon: <Upload className="w-5 h-5" />,
+  //   title: "Data import",
+  //   description: "Migrate from other platforms seamlessly with built-in import tools.",
+  // },
+  // {
+  //   icon: <Download className="w-5 h-5" />,
+  //   title: "Data export",
+  //   description: "Export complete raw data anytime. No lock-in, no summaries—just your data.",
+  // },
   {
     icon: <Mail className="w-5 h-5" />,
     title: "Email reports",
@@ -375,15 +354,15 @@ export default function FeaturesPage() {
       </section>
 
       <FeatureGrid
-        title="Analytics"
+        title="Core Web Analytics"
         description="Track every metric that matters. Make data-driven decisions with comprehensive analytics designed for clarity."
-        features={analyticsFeatures}
+        features={coreWebAnalyticsFeatures}
       />
 
       <FeatureGrid
-        title="Insights"
-        description="Go deeper with advanced analytics tools that transform raw data into actionable business intelligence."
-        features={insightsFeatures}
+        title="Advanced Analytics"
+        description="Go deeper with powerful tools for session replay, funnels, comparisons, and advanced user behavior analysis."
+        features={advancedAnalyticsFeatures}
         bgClassName="bg-neutral-900/50"
       />
 
@@ -404,7 +383,6 @@ export default function FeaturesPage() {
         title="Cloud"
         description="Enterprise-grade infrastructure without the enterprise headache. Reliable, fast, and fully managed."
         features={cloudFeatures}
-        bgClassName="bg-neutral-900/50"
       />
 
       {/* Why Choose Rybbit Section */}
