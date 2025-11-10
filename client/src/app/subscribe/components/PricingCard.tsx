@@ -9,6 +9,7 @@ import {
   EVENT_TIERS,
   STANDARD_FEATURES,
   PRO_FEATURES,
+  ENTERPRISE_FEATURES,
   FREE_FEATURES,
   findPriceForTier,
   formatEventTier,
@@ -164,13 +165,13 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
 
       {/* Cards section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid min-[1100px]:grid-cols-4 min-[600px]:grid-cols-2 min-[400px]:grid-cols-1 gap-6 max-w-6xl mx-auto">
         {/* Free Plan Card */}
         <div className="bg-neutral-800/15 rounded-xl border border-neutral-700/60 overflow-hidden text-neutral-300">
           <div className="p-6">
             <div className="mb-4">
               <h3 className="text-xl font-bold mb-2">Free</h3>
-              <p className="text-sm text-neutral-400">Perfect for getting started</p>
+              <p className="text-sm text-neutral-400 h-10">Perfect for hobby projects</p>
             </div>
 
             {/* Price display */}
@@ -190,7 +191,7 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
             </button>
 
             {/* Features */}
-            <div className="space-y-4 mt-6">
+            <div className="space-y-3 mt-6">
               {FREE_FEATURES.map((feature, i) => (
                 <div key={i} className="flex items-center">
                   <Check className="h-4 w-4 text-emerald-400 mr-3 shrink-0" />
@@ -206,7 +207,7 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
           <div className="p-6">
             <div className="mb-4">
               <h3 className="text-xl font-bold mb-2">Standard</h3>
-              <p className="text-sm text-neutral-400">Everything you need to get started</p>
+              <p className="text-sm text-neutral-400 h-10">Everything you need to get started as a small business</p>
             </div>
 
             {/* Price display */}
@@ -229,11 +230,11 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
               className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-3 rounded-xl shadow-lg shadow-emerald-900/20 transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Processing..." : isCustomTier ? "Contact us" : "Get Standard"}
+              {isLoading ? "Processing..." : isCustomTier ? "Book a call" : "Get started"}
             </button>
 
             {/* Features */}
-            <div className="space-y-4 mt-6">
+            <div className="space-y-3 mt-6">
               {STANDARD_FEATURES.map((feature, i) => (
                 <div key={i} className="flex items-center">
                   <Check className="h-4 w-4 text-emerald-400 mr-3 shrink-0" />
@@ -245,11 +246,16 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
         </div>
 
         {/* Pro Plan Card */}
-        <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+        <div className="bg-neutral-800/100 rounded-xl border-2 border-emerald-500 overflow-hidden">
           <div className="p-6">
             <div className="mb-4">
-              <h3 className="text-xl font-bold mb-2">Pro</h3>
-              <p className="text-sm text-neutral-400">Advanced features for professional teams</p>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-xl font-bold">Pro</h3>
+                <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-sm text-neutral-400 h-10">Advanced features for professional teams</p>
             </div>
 
             {/* Price display */}
@@ -272,12 +278,44 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
               className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-3 rounded-xl shadow-lg shadow-emerald-900/20 transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Processing..." : isCustomTier ? "Contact us" : "Get Pro"}
+              {isLoading ? "Processing..." : isCustomTier ? "Book a call" : "Get started"}
             </button>
 
             {/* Features */}
-            <div className="space-y-4 mt-6">
+            <div className="space-y-3 mt-6">
               {PRO_FEATURES.map((feature, i) => (
+                <div key={i} className="flex items-center">
+                  <Check className="h-4 w-4 text-emerald-400 mr-3 shrink-0" />
+                  <span className="text-sm">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Enterprise Plan Card */}
+        <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+          <div className="p-6">
+            <div className="mb-4">
+              <h3 className="text-xl font-bold mb-2">Enterprise</h3>
+              <p className="text-sm text-neutral-400 h-10">Advanced features for enterprise teams</p>
+            </div>
+
+            {/* Price display */}
+            <div className="mb-6">
+              <div className="text-3xl font-bold">Custom</div>
+            </div>
+
+            {/* Contact button */}
+            <a href="https://www.rybbit.com/contact" className="w-full block">
+              <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-3 rounded-xl shadow-lg shadow-emerald-900/20 transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50 cursor-pointer">
+                Book a call
+              </button>
+            </a>
+
+            {/* Features */}
+            <div className="space-y-3 mt-6">
+              {ENTERPRISE_FEATURES.map((feature, i) => (
                 <div key={i} className="flex items-center">
                   <Check className="h-4 w-4 text-emerald-400 mr-3 shrink-0" />
                   <span className="text-sm">{feature}</span>

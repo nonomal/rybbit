@@ -1,31 +1,49 @@
 // Common utility functions and constants for subscription components
 
-import { FREE_SITE_LIMIT, STANDARD_SITE_LIMIT, STANDARD_TEAM_LIMIT } from "../../../lib/const";
+import { FREE_SITE_LIMIT, STANDARD_SITE_LIMIT, STANDARD_TEAM_LIMIT, PRO_SITE_LIMIT, PRO_TEAM_LIMIT } from "../../../lib/const";
 import { getStripePrices, STRIPE_TIERS } from "../../../lib/stripe";
 
 export const EVENT_TIERS = [...STRIPE_TIERS.map(tier => tier.events), "Custom"];
 
 export const STANDARD_FEATURES = [
+  "Everything in Free",
   `Up to ${STANDARD_SITE_LIMIT} websites`,
   `Up to ${STANDARD_TEAM_LIMIT} team members`,
-  "Web vitals",
   "Funnels",
   "Goals",
-  "Error tracking",
   "Journeys",
+  "Web vitals",
+  "Error tracking",
   "User profiles",
   "Retention",
+  "Sessions",
+  "Email reports",
   "2 year data retention",
-  "Standard support",
+  "Email support",
 ];
 
 export const PRO_FEATURES = [
   "Everything in Standard",
+  `Up to ${PRO_SITE_LIMIT} websites`,
+  `Up to ${PRO_TEAM_LIMIT} team members`,
+  "Session replays",
+  "5 year data retention",
+  "Priority support",
+];
+
+export const ENTERPRISE_FEATURES = [
+  "Everything in Pro",
   "Unlimited websites",
   "Unlimited team members",
-  "Session replays",
-  "5+ year data retention",
-  "Priority support",
+  "Single Sign-On (SSO)",
+  "Infinite data retention",
+  "Dedicated isolated instance",
+  "On-premise Installation",
+  "Custom Features",
+  "Manual invoicing",
+  "Uptime SLA",
+  "Enterprise support",
+  "Slack/live chat support",
 ];
 
 export const FREE_FEATURES = [

@@ -111,7 +111,7 @@ export function UsageChart({ organizationId, startDate, endDate, timeZone = "UTC
   return (
     <div>
       <h3 className="font-medium text-sm text-neutral-300 mb-2 flex items-center gap-2 mb-4">
-        Last 30 Days
+        Last 30 Days Usage
         <Badge variant="outline" className="text-neutral-300">
           {totalEvents.toLocaleString()} events
         </Badge>
@@ -145,7 +145,7 @@ export function UsageChart({ organizationId, startDate, endDate, timeZone = "UTC
             tickPadding: 10,
             tickRotation: 0,
             truncateTickAt: 0,
-            tickValues: Math.min(maxTicks, 10),
+            tickValues: Math.min(maxTicks, 6),
             format: value => {
               const dt = DateTime.fromJSDate(value).setLocale(userLocale);
               return dt.toFormat("MMM d");

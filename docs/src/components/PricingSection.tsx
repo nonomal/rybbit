@@ -280,7 +280,7 @@ export function PricingSection() {
           {/* Enterprise Plan Card */}
           <PricingCard
             title="Enterprise"
-            description="Advanced features for enterprise teams, with customized terms."
+            description="."
             priceDisplay={<div className="text-3xl font-bold">Custom</div>}
             features={ENTERPRISE_FEATURES}
             buttonText={"Book a call"}

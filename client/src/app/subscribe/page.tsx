@@ -17,9 +17,9 @@ export default function Subscribe() {
   const router = useRouter();
 
   // Redirect if already subscribed
-  if (subscription?.status === "active") {
-    router.push("/settings/organization/subscription");
-  }
+  // if (subscription?.status === "active") {
+  //   router.push("/settings/organization/subscription");
+  // }
 
   // Get the active organization ID
   const organizationId = activeOrg?.id;
