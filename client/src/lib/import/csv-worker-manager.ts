@@ -11,11 +11,10 @@ export class CSVWorkerManager {
   private worker: Worker | null = null;
   private progress: ImportProgress = {
     status: "idle",
-    totalRows: 0,
     parsedRows: 0,
     skippedRows: 0,
     importedEvents: 0,
-    errors: [],
+    errors: 0,
   };
   private onProgress: ProgressCallback | null = null;
   private onComplete: CompleteCallback | null = null;
@@ -43,11 +42,10 @@ export class CSVWorkerManager {
 
     this.progress = {
       status: "parsing",
-      totalRows: 0,
       parsedRows: 0,
       skippedRows: 0,
       importedEvents: 0,
-      errors: [],
+      errors: 0,
     };
 
     // Create worker
@@ -63,9 +61,7 @@ export class CSVWorkerManager {
     // Set up error handler
     this.worker.onerror = error => {
       this.progress.status = "failed";
-      this.progress.errors.push({
-        message: `Worker error: ${error.message}`,
-      });
+      this.progress.errors++;
       this.notifyProgress();
       if (this.onComplete) {
         this.onComplete(false, `Worker error: ${error.message}`);
@@ -76,8 +72,6 @@ export class CSVWorkerManager {
     const message: WorkerMessageToWorker = {
       type: "PARSE_START",
       file,
-      siteId,
-      importId,
       earliestAllowedDate,
       latestAllowedDate,
     };
@@ -88,17 +82,12 @@ export class CSVWorkerManager {
 
   private handleWorkerMessage(message: WorkerMessageToMain): void {
     switch (message.type) {
-      case "PROGRESS":
+      case "CHUNK_READY":
+        // Update progress from chunk stats
         this.progress.parsedRows = message.parsed;
         this.progress.skippedRows = message.skipped;
-        this.progress.errors = this.progress.errors.slice(0, this.progress.errors.length - message.errors);
-        for (let i = 0; i < message.errors; i++) {
-          this.progress.errors.push({ message: "Parse error" });
-        }
-        this.notifyProgress();
-        break;
+        this.progress.errors = message.errors;
 
-      case "CHUNK_READY":
         // Upload batch immediately (sequential)
         this.progress.status = "uploading";
         this.notifyProgress();
@@ -107,15 +96,9 @@ export class CSVWorkerManager {
 
       case "COMPLETE":
         this.parsingComplete = true;
-        this.progress.parsedRows = message.totalParsed;
-        this.progress.skippedRows = message.totalSkipped;
-
-        // Add detailed errors
-        message.errorDetails.forEach(error => {
-          this.progress.errors.push({
-            message: `Row ${error.row}: ${error.message}`,
-          });
-        });
+        this.progress.parsedRows = message.parsed;
+        this.progress.skippedRows = message.skipped;
+        this.progress.errors = message.errors;
 
         this.notifyProgress();
 
@@ -125,9 +108,7 @@ export class CSVWorkerManager {
 
       case "ERROR":
         this.progress.status = "failed";
-        this.progress.errors.push({
-          message: message.message,
-        });
+        this.progress.errors++;
         this.notifyProgress();
         if (this.onComplete) {
           this.onComplete(false, message.message);
@@ -165,9 +146,7 @@ export class CSVWorkerManager {
     } catch (error) {
       // Fail fast - no retries
       this.progress.status = "failed";
-      this.progress.errors.push({
-        message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      });
+      this.progress.errors++;
       this.notifyProgress();
 
       if (this.onComplete) {

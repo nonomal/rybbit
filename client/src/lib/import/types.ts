@@ -31,8 +31,6 @@ export type WorkerMessageToWorker =
   | {
       type: "PARSE_START";
       file: File;
-      siteId: number;
-      importId: string;
       earliestAllowedDate: string; // Filter events before this date (quota-based, yyyy-MM-dd)
       latestAllowedDate: string; // Filter events after this date (quota-based, yyyy-MM-dd)
     }
@@ -42,21 +40,17 @@ export type WorkerMessageToWorker =
 
 export type WorkerMessageToMain =
   | {
-      type: "PROGRESS";
-      parsed: number;
-      skipped: number;
-      errors: number;
-    }
-  | {
       type: "CHUNK_READY";
       events: UmamiEvent[]; // Raw CSV rows, not transformed
+      parsed: number; // Total rows parsed so far
+      skipped: number; // Total rows skipped so far
+      errors: number; // Total parse errors so far
     }
   | {
       type: "COMPLETE";
-      totalParsed: number;
-      totalSkipped: number;
-      totalErrors: number;
-      errorDetails: Array<{ row: number; message: string }>;
+      parsed: number; // Total rows parsed
+      skipped: number; // Total rows skipped
+      errors: number; // Total parse errors
     }
   | {
       type: "ERROR";
@@ -81,9 +75,8 @@ export interface BatchImportResponse {
 // Import progress tracking
 export interface ImportProgress {
   status: "idle" | "parsing" | "uploading" | "completed" | "failed";
-  totalRows: number;
   parsedRows: number;
   skippedRows: number;
   importedEvents: number;
-  errors: Array<{ message: string }>;
+  errors: number;
 }

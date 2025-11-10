@@ -524,17 +524,9 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
             </div>
 
             {/* Errors */}
-            {importProgress && importProgress.errors.length > 0 && (
-              <div className="max-h-40 overflow-y-auto">
-                <p className="text-sm font-medium text-red-600 mb-2">Errors ({importProgress.errors.length}):</p>
-                {importProgress.errors.slice(0, 10).map((error, idx) => (
-                  <p key={idx} className="text-xs text-red-600">
-                    {error.message}
-                  </p>
-                ))}
-                {importProgress.errors.length > 10 && (
-                  <p className="text-xs text-muted-foreground">...and {importProgress.errors.length - 10} more</p>
-                )}
+            {importProgress && importProgress.errors > 0 && (
+              <div>
+                <p className="text-sm font-medium text-red-600">{importProgress.errors} parse errors occurred</p>
               </div>
             )}
           </div>

@@ -1,27 +1,17 @@
-// Web Worker for client-side CSV parsing only
-// This worker runs in a separate thread to avoid blocking the main UI thread
-// Transformation happens on the server
-
 import Papa from "papaparse";
 import { DateTime } from "luxon";
 import type { WorkerMessageToWorker, WorkerMessageToMain, UmamiEvent } from "@/lib/import/types";
 
-const CHUNK_SIZE = 5000; // Number of rows per batch sent to main thread
-const PROGRESS_UPDATE_INTERVAL = 1000; // Update progress every 1000 rows
+const BATCH_SIZE = 5000;
 
 let currentBatch: UmamiEvent[] = [];
 let totalParsed = 0;
 let totalSkipped = 0;
 let totalErrors = 0;
-let errorDetails: Array<{ row: number; message: string }> = [];
-let lastProgressUpdate = 0;
 
-// Date range filters (client-side optimization to reduce server load)
-// Quota-enforced dates (based on subscription tier)
 let earliestAllowedDate: DateTime | null = null;
 let latestAllowedDate: DateTime | null = null;
 
-// Umami CSV header mapping
 const umamiHeaders = [
   undefined,
   "session_id",
@@ -62,7 +52,6 @@ const umamiHeaders = [
 ];
 
 function createDateRangeFilter(earliestAllowedDateStr: string, latestAllowedDateStr: string) {
-  // Parse quota-enforced dates
   earliestAllowedDate = DateTime.fromFormat(earliestAllowedDateStr, "yyyy-MM-dd", { zone: "utc" }).startOf("day");
   latestAllowedDate = DateTime.fromFormat(latestAllowedDateStr, "yyyy-MM-dd", { zone: "utc" }).endOf("day");
 
@@ -81,7 +70,6 @@ function isDateInRange(dateStr: string): boolean {
     return false;
   }
 
-  // Check quota-enforced dates
   if (earliestAllowedDate && createdAt < earliestAllowedDate) {
     return false;
   }
@@ -98,20 +86,13 @@ function sendChunk() {
     const message: WorkerMessageToMain = {
       type: "CHUNK_READY",
       events: currentBatch,
+      parsed: totalParsed,
+      skipped: totalSkipped,
+      errors: totalErrors,
     };
     self.postMessage(message);
     currentBatch = [];
   }
-}
-
-function sendProgress() {
-  const message: WorkerMessageToMain = {
-    type: "PROGRESS",
-    parsed: totalParsed,
-    skipped: totalSkipped,
-    errors: totalErrors,
-  };
-  self.postMessage(message);
 }
 
 function handleParsedRow(row: unknown, rowIndex: number) {
@@ -160,14 +141,8 @@ function handleParsedRow(row: unknown, rowIndex: number) {
   totalParsed++;
 
   // Send batch when it reaches chunk size
-  if (currentBatch.length >= CHUNK_SIZE) {
+  if (currentBatch.length >= BATCH_SIZE) {
     sendChunk();
-  }
-
-  // Send progress update periodically
-  if (totalParsed - lastProgressUpdate >= PROGRESS_UPDATE_INTERVAL) {
-    sendProgress();
-    lastProgressUpdate = totalParsed;
   }
 }
 
@@ -189,29 +164,18 @@ function parseCSV(file: File) {
       }
       if (results.errors && results.errors.length > 0) {
         totalErrors++;
-        if (errorDetails.length < 100) {
-          // Limit error collection to avoid memory issues
-          errorDetails.push({
-            row: rowIndex,
-            message: results.errors.map(e => e.message).join(", "),
-          });
-        }
       }
     },
     complete: () => {
       // Send final chunk if any
       sendChunk();
 
-      // Send final progress
-      sendProgress();
-
       // Send completion message
       const message: WorkerMessageToMain = {
         type: "COMPLETE",
-        totalParsed,
-        totalSkipped,
-        totalErrors,
-        errorDetails,
+        parsed: totalParsed,
+        skipped: totalSkipped,
+        errors: totalErrors,
       };
       self.postMessage(message);
     },
@@ -237,8 +201,6 @@ self.onmessage = (event: MessageEvent<WorkerMessageToWorker>) => {
       totalParsed = 0;
       totalSkipped = 0;
       totalErrors = 0;
-      errorDetails = [];
-      lastProgressUpdate = 0;
 
       // Set up quota-based date range filter
       createDateRangeFilter(message.earliestAllowedDate, message.latestAllowedDate);
