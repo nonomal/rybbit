@@ -31,7 +31,7 @@ export function useGetOverviewBucketed({
   dynamicFilters?: Filter[];
   refetchInterval?: number;
   overrideTime?:
-    | { mode: "past-minutes"; past_minutes_start: number; past_minutes_end: number }
+    | { mode: "past-minutes"; pastMinutesStart: number; pastMinutesEnd: number }
     | { mode: "range"; startDate: string; endDate: string };
   props?: Partial<UseQueryOptions<APIResponse<GetOverviewBucketedResponse>>>;
 }): UseQueryResult<APIResponse<GetOverviewBucketedResponse>> {
@@ -53,8 +53,8 @@ export function useGetOverviewBucketed({
     timeToUse.mode === "past-minutes"
       ? [
           "overview-bucketed-past-minutes",
-          timeToUse.past_minutes_start,
-          timeToUse.past_minutes_end,
+          timeToUse.pastMinutesStart,
+          timeToUse.pastMinutesEnd,
           site,
           bucket,
           combinedFilters,

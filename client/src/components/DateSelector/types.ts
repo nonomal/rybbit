@@ -36,8 +36,8 @@ export type AllTimeMode = {
 
 export type PastMinutesMode = {
   mode: "past-minutes";
-  past_minutes_start: number;
-  past_minutes_end: number;
+  pastMinutesStart: number;
+  pastMinutesEnd: number;
   wellKnown?: "last-30-minutes" | "last-1-hour" | "last-6-hours" | "last-24-hours";
 };
 

@@ -43,8 +43,8 @@ export function useMetric({
     timeToUse.mode === "past-minutes" && periodTime === "previous"
       ? {
           ...timeToUse,
-          past_minutes_start: timeToUse.past_minutes_start * 2,
-          past_minutes_end: timeToUse.past_minutes_start,
+          past_minutes_start: timeToUse.pastMinutesStart * 2,
+          past_minutes_end: timeToUse.pastMinutesStart,
         }
       : timeToUse;
 

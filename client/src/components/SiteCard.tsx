@@ -31,8 +31,8 @@ export function SiteCard({ siteId, domain }: SiteCardProps) {
     bucket: "hour",
     overrideTime: {
       mode: "past-minutes",
-      past_minutes_start: 1440,
-      past_minutes_end: 0,
+      pastMinutesStart: 1440,
+      pastMinutesEnd: 0,
     },
     props: {
       enabled: isInView,
@@ -47,8 +47,8 @@ export function SiteCard({ siteId, domain }: SiteCardProps) {
     site: siteId,
     overrideTime: {
       mode: "past-minutes",
-      past_minutes_start: 1440,
-      past_minutes_end: 0,
+      pastMinutesStart: 1440,
+      pastMinutesEnd: 0,
     },
   });
 

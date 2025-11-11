@@ -58,26 +58,26 @@ const wellKnownPresets: Record<string, () => Time> = {
   "this-year": () => ({ mode: "year", year: DateTime.now().startOf("year").toISODate(), wellKnown: "this-year" }),
   "last-30-minutes": () => ({
     mode: "past-minutes",
-    past_minutes_start: 30,
-    past_minutes_end: 0,
+    pastMinutesStart: 30,
+    pastMinutesEnd: 0,
     wellKnown: "last-30-minutes",
   }),
   "last-1-hour": () => ({
     mode: "past-minutes",
-    past_minutes_start: 60,
-    past_minutes_end: 0,
+    pastMinutesStart: 60,
+    pastMinutesEnd: 0,
     wellKnown: "last-1-hour",
   }),
   "last-6-hours": () => ({
     mode: "past-minutes",
-    past_minutes_start: 360,
-    past_minutes_end: 0,
+    pastMinutesStart: 360,
+    pastMinutesEnd: 0,
     wellKnown: "last-6-hours",
   }),
   "last-24-hours": () => ({
     mode: "past-minutes",
-    past_minutes_start: 1440,
-    past_minutes_end: 0,
+    pastMinutesStart: 1440,
+    pastMinutesEnd: 0,
     wellKnown: "last-24-hours",
   }),
   "all-time": () => ({ mode: "all-time", wellKnown: "all-time" }),
@@ -112,8 +112,8 @@ const serializeStateToUrl = (
     } else if (time.mode === "year") {
       params.set("year", time.year);
     } else if (time.mode === "past-minutes") {
-      params.set("past_minutes_start", time.past_minutes_start.toString());
-      params.set("past_minutes_end", time.past_minutes_end.toString());
+      params.set("past_minutes_start", time.pastMinutesStart.toString());
+      params.set("past_minutes_end", time.pastMinutesEnd.toString());
     }
   }
 
@@ -178,8 +178,8 @@ const deserializeUrlToState = (
       if (past_minutes_start && past_minutes_end) {
         result.time = {
           mode: "past-minutes",
-          past_minutes_start: Number(past_minutes_start),
-          past_minutes_end: Number(past_minutes_end),
+          pastMinutesStart: Number(past_minutes_start),
+          pastMinutesEnd: Number(past_minutes_end),
         };
       }
     } else if (timeMode === "all-time") {

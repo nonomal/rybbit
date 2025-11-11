@@ -46,11 +46,11 @@ const getLabel = (time: Time) => {
   }
 
   if (time.mode === "past-minutes") {
-    if (time.past_minutes_start >= 60) {
-      const hours = Math.floor(time.past_minutes_start / 60);
+    if (time.pastMinutesStart >= 60) {
+      const hours = Math.floor(time.pastMinutesStart / 60);
       return `Last ${hours} ${hours === 1 ? "Hour" : "Hours"}`;
     }
-    return `Last ${time.past_minutes_start} minutes`;
+    return `Last ${time.pastMinutesStart} minutes`;
   }
 
   if (time.mode === "day") {
@@ -187,8 +187,8 @@ export function DateSelector({
               onClick={() =>
                 setTime({
                   mode: "past-minutes",
-                  past_minutes_start: 30,
-                  past_minutes_end: 0,
+                  pastMinutesStart: 30,
+                  pastMinutesEnd: 0,
                   wellKnown: "last-30-minutes",
                 })
               }
@@ -199,8 +199,8 @@ export function DateSelector({
               onClick={() =>
                 setTime({
                   mode: "past-minutes",
-                  past_minutes_start: 60,
-                  past_minutes_end: 0,
+                  pastMinutesStart: 60,
+                  pastMinutesEnd: 0,
                   wellKnown: "last-1-hour",
                 })
               }
@@ -211,8 +211,8 @@ export function DateSelector({
               onClick={() =>
                 setTime({
                   mode: "past-minutes",
-                  past_minutes_start: 360,
-                  past_minutes_end: 0,
+                  pastMinutesStart: 360,
+                  pastMinutesEnd: 0,
                   wellKnown: "last-6-hours",
                 })
               }
@@ -223,8 +223,8 @@ export function DateSelector({
               onClick={() =>
                 setTime({
                   mode: "past-minutes",
-                  past_minutes_start: 1440,
-                  past_minutes_end: 0,
+                  pastMinutesStart: 1440,
+                  pastMinutesEnd: 0,
                   wellKnown: "last-24-hours",
                 })
               }

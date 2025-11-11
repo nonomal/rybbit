@@ -17,7 +17,7 @@ type UseGetOverviewOptions = {
   periodTime?: PeriodTime;
   site?: number | string;
   overrideTime?:
-    | { mode: "past-minutes"; past_minutes_start: number; past_minutes_end: number }
+    | { mode: "past-minutes"; pastMinutesStart: number; pastMinutesEnd: number }
     | { mode: "range"; startDate: string; endDate: string };
 };
 

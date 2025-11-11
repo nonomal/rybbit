@@ -86,8 +86,8 @@ const getMax = (time: Time, bucket: TimeBucket) => {
 const getMin = (time: Time, bucket: TimeBucket) => {
   if (time.mode === "past-minutes") {
     return DateTime.now()
-      .minus({ minutes: time.past_minutes_start })
-      .startOf(time.past_minutes_start < 360 ? "minute" : "hour")
+      .minus({ minutes: time.pastMinutesStart })
+      .startOf(time.pastMinutesStart < 360 ? "minute" : "hour")
       .toJSDate();
   } else if (time.mode === "day") {
     const dayDate = DateTime.fromISO(time.day).startOf("day");
@@ -274,14 +274,14 @@ export function Chart({
         truncateTickAt: 0,
         tickValues: Math.min(
           maxTicks,
-          time.mode === "day" || (time.mode === "past-minutes" && time.past_minutes_start === 1440)
+          time.mode === "day" || (time.mode === "past-minutes" && time.pastMinutesStart === 1440)
             ? 24
             : Math.min(12, data?.data?.length ?? 0)
         ),
         format: value => {
           const dt = DateTime.fromJSDate(value).setLocale(userLocale);
           if (time.mode === "past-minutes") {
-            if (time.past_minutes_start < 1440) {
+            if (time.pastMinutesStart < 1440) {
               return dt.toFormat(hour12 ? "h:mm" : "HH:mm");
             }
             return dt.toFormat(hour12 ? "ha" : "HH:mm");

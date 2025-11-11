@@ -11,8 +11,8 @@ export function RealtimeChart() {
   // Create a time object for the last 30 minutes for realtime data
   const realtimeTime = {
     mode: "past-minutes" as const,
-    past_minutes_start: 30,
-    past_minutes_end: 0,
+    pastMinutesStart: 30,
+    pastMinutesEnd: 0,
   };
 
   const { data, isLoading } = useGetOverviewBucketed({

@@ -84,7 +84,7 @@ const Stat = ({
         if (time.mode === "past-minutes") {
           const timestamp = new Date(d.time);
           const now = new Date();
-          const startTime = new Date(now.getTime() - time.past_minutes_start * 60 * 1000);
+          const startTime = new Date(now.getTime() - time.pastMinutesStart * 60 * 1000);
           return timestamp >= startTime && timestamp <= now;
         }
         return true;

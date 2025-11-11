@@ -152,7 +152,7 @@ export function useGetSessionDetailsInfinite(sessionId: string | null) {
   let minutes: number | undefined;
   if (pastMinutesMode) {
     if (time.mode === "past-minutes") {
-      minutes = time.past_minutes_start; // Use the dynamic value
+      minutes = time.pastMinutesStart; // Use the dynamic value
     }
   }
 

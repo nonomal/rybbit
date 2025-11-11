@@ -37,8 +37,8 @@ export function getQueryParams(time: Time, additionalParams: Record<string, any>
   if (time.mode === "past-minutes") {
     return {
       time_zone: timeZone,
-      past_minutes_start: time.past_minutes_start,
-      past_minutes_end: time.past_minutes_end,
+      past_minutes_start: time.pastMinutesStart,
+      past_minutes_end: time.pastMinutesEnd,
       ...additionalParams,
     };
   }

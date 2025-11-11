@@ -79,7 +79,7 @@ export const useStore = create<Store>(set => ({
         day: DateTime.fromISO(time.day).minus({ days: 1 }).toISODate() ?? "",
       };
     } else if (time.mode === "past-minutes") {
-      const timeDiff = time.past_minutes_start - time.past_minutes_end;
+      const timeDiff = time.pastMinutesStart - time.pastMinutesEnd;
 
       if (timeDiff <= 120) {
         bucketToUse = "minute";
@@ -87,8 +87,8 @@ export const useStore = create<Store>(set => ({
 
       previousTime = {
         mode: "past-minutes",
-        past_minutes_start: time.past_minutes_start + timeDiff,
-        past_minutes_end: time.past_minutes_end + timeDiff,
+        pastMinutesStart: time.pastMinutesStart + timeDiff,
+        pastMinutesEnd: time.pastMinutesEnd + timeDiff,
       };
     } else if (time.mode === "range") {
       const timeRangeLength = DateTime.fromISO(time.endDate).diff(DateTime.fromISO(time.startDate), "days").days + 1;

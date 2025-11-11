@@ -58,7 +58,7 @@ export function PreviousChart({
   const min = getMin(time, bucket);
   const maxPastMinutes =
     time.mode === "past-minutes" && bucket === "hour"
-      ? DateTime.now().setZone("UTC").minus({ minutes: time.past_minutes_start }).startOf("hour").toJSDate()
+      ? DateTime.now().setZone("UTC").minus({ minutes: time.pastMinutesStart }).startOf("hour").toJSDate()
       : undefined;
 
   return (
@@ -100,7 +100,7 @@ export function PreviousChart({
         format: value => {
           const localTime = DateTime.fromJSDate(value).toLocal();
 
-          if ((time.mode === "past-minutes" && time.past_minutes_start >= 1440) || time.mode === "day") {
+          if ((time.mode === "past-minutes" && time.pastMinutesStart >= 1440) || time.mode === "day") {
             return localTime.toFormat("ha");
           } else if (time.mode === "range") {
             return localTime.toFormat("MMM d");

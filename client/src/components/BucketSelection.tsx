@@ -7,7 +7,7 @@ import { Time } from "./DateSelector/types";
 
 const getOptions = (time: Time) => {
   if (time.mode === "past-minutes") {
-    if (time.past_minutes_start >= 1440) {
+    if (time.pastMinutesStart >= 1440) {
       return (
         <SelectContent>
           <SelectItem size="sm" value="minute">
@@ -25,7 +25,7 @@ const getOptions = (time: Time) => {
         </SelectContent>
       );
     }
-    if (time.past_minutes_start >= 360) {
+    if (time.pastMinutesStart >= 360) {
       return (
         <SelectContent>
           <SelectItem size="sm" value="hour">
