@@ -6,9 +6,6 @@ import { eq } from "drizzle-orm";
 import { processResults } from "../../api/analytics/utils.js";
 import { getBestSubscription, type SubscriptionInfo } from "../../lib/subscriptionUtils.js";
 import { IS_CLOUD } from "../../lib/const.js";
-import { createServiceLogger } from "../../lib/logger/logger.js";
-
-const logger = createServiceLogger("import:quota-checker");
 
 /**
  * Get the number of months of historical data allowed for import based on subscription tier
@@ -159,7 +156,6 @@ export class ImportQuotaTracker {
 
       return monthlyUsage;
     } catch (error) {
-      logger.error({ error }, "Error querying ClickHouse for monthly usage");
       throw new Error(
         `Failed to query monthly usage for quota check: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -173,7 +169,11 @@ export class ImportQuotaTracker {
 
     const dt = DateTime.fromFormat(timestamp, "yyyy-MM-dd HH:mm:ss", { zone: "utc" });
     if (!dt.isValid) {
-      logger.warn({ timestamp }, "Invalid timestamp format");
+      return false;
+    }
+
+    const now = DateTime.utc();
+    if (dt > now) {
       return false;
     }
 

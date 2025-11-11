@@ -1,12 +1,7 @@
-// CSV import manager using PapaParse with built-in worker
-// Handles streaming, batching, and sequential uploads
-// Server handles transformation and quota checking
-
 import Papa from "papaparse";
 import { DateTime } from "luxon";
-import type { ImportProgress, UmamiEvent } from "./types";
+import type { UmamiEvent } from "./types";
 
-type ProgressCallback = (progress: ImportProgress) => void;
 type CompleteCallback = (success: boolean, message: string) => void;
 
 const BATCH_SIZE = 5000;
@@ -52,17 +47,10 @@ const umamiHeaders = [
 
 export class CSVWorkerManager {
   private aborted = false;
-  private progress: ImportProgress = {
-    status: "idle",
-    parsedRows: 0,
-    skippedRows: 0,
-    importedEvents: 0,
-    errors: 0,
-  };
-  private onProgress: ProgressCallback | null = null;
   private onComplete: CompleteCallback | null = null;
   private uploadInProgress = false;
   private parsingComplete = false;
+  private quotaExceeded = false;
   private siteId: number = 0;
   private importId: string = "";
 
@@ -70,8 +58,7 @@ export class CSVWorkerManager {
   private earliestAllowedDate: DateTime | null = null;
   private latestAllowedDate: DateTime | null = null;
 
-  constructor(onProgress?: ProgressCallback, onComplete?: CompleteCallback) {
-    this.onProgress = onProgress || null;
+  constructor(onComplete?: CompleteCallback) {
     this.onComplete = onComplete || null;
   }
 
@@ -88,14 +75,7 @@ export class CSVWorkerManager {
     this.uploadInProgress = false;
     this.currentBatch = [];
     this.aborted = false;
-
-    this.progress = {
-      status: "parsing",
-      parsedRows: 0,
-      skippedRows: 0,
-      importedEvents: 0,
-      errors: 0,
-    };
+    this.quotaExceeded = false;
 
     // Set up date range filter
     this.earliestAllowedDate = DateTime.fromFormat(earliestAllowedDate, "yyyy-MM-dd", { zone: "utc" }).startOf("day");
@@ -121,13 +101,10 @@ export class CSVWorkerManager {
         return umamiHeaders[index] || header;
       },
       step: results => {
-        if (this.aborted) return;
+        if (this.aborted || this.quotaExceeded) return;
 
         if (results.data) {
           this.handleParsedRow(results.data);
-        }
-        if (results.errors && results.errors.length > 0) {
-          this.progress.errors++;
         }
       },
       complete: () => {
@@ -139,8 +116,6 @@ export class CSVWorkerManager {
         this.handleError(error.message);
       },
     });
-
-    this.notifyProgress();
   }
 
   private isDateInRange(dateStr: string): boolean {
@@ -188,58 +163,63 @@ export class CSVWorkerManager {
 
     // Skip rows with missing created_at (required field)
     if (!umamiEvent.created_at) {
-      this.progress.skippedRows++;
       return;
     }
 
     // Apply quota-based date range filter
     if (!this.isDateInRange(umamiEvent.created_at)) {
-      this.progress.skippedRows++;
       return;
     }
 
     // Add to batch
     this.currentBatch.push(umamiEvent);
-    this.progress.parsedRows++;
 
     // Send batch when it reaches chunk size
     if (this.currentBatch.length >= BATCH_SIZE) {
-      this.sendBatch();
+      this.sendBatch(false);
     }
   }
 
-  private sendBatch(): void {
+  private sendBatch(isLastBatch: boolean): void {
     if (this.currentBatch.length > 0) {
       const batch = this.currentBatch;
       this.currentBatch = [];
-
-      // Upload batch (sequential)
-      this.progress.status = "uploading";
-      this.notifyProgress();
-      this.uploadBatch(batch);
+      this.uploadBatch(batch, isLastBatch);
+    } else if (isLastBatch) {
+      // No events in final batch, send empty batch with finalization
+      this.uploadBatch([], isLastBatch);
     }
   }
 
   private handleParseComplete(): void {
     this.parsingComplete = true;
 
-    // Send final batch if any
-    this.sendBatch();
+    // Send final batch with finalization flag
+    this.sendBatch(true);
 
-    // Check if upload is complete
-    this.checkCompletion();
+    // If nothing to upload, check completion immediately
+    if (!this.uploadInProgress) {
+      this.checkCompletion();
+    }
   }
 
   private handleError(message: string): void {
-    this.progress.status = "failed";
-    this.progress.errors++;
-    this.notifyProgress();
     if (this.onComplete) {
       this.onComplete(false, message);
     }
   }
 
-  private async uploadBatch(events: UmamiEvent[]): Promise<void> {
+  private async uploadBatch(events: UmamiEvent[], isLastBatch: boolean): Promise<void> {
+    // Don't upload if quota exceeded
+    if (this.quotaExceeded) {
+      return;
+    }
+
+    // Skip empty batches unless it's the last one (needed for finalization)
+    if (events.length === 0 && !isLastBatch) {
+      return;
+    }
+
     this.uploadInProgress = true;
 
     try {
@@ -251,6 +231,7 @@ export class CSVWorkerManager {
         credentials: "include",
         body: JSON.stringify({
           events,
+          isLastBatch,
         }),
       });
 
@@ -260,18 +241,21 @@ export class CSVWorkerManager {
       }
 
       const data = await response.json();
-      this.progress.importedEvents += data.importedCount ?? events.length;
-      this.notifyProgress();
-    } catch (error) {
-      // Fail fast - no retries
-      this.progress.status = "failed";
-      this.progress.errors++;
-      this.notifyProgress();
 
+      // Check if quota was exceeded
+      if (data.quotaExceeded) {
+        this.quotaExceeded = true;
+        this.aborted = true; // Stop parsing
+        if (this.onComplete) {
+          this.onComplete(true, data.message || "Import completed with quota limits");
+        }
+        return;
+      }
+    } catch (error) {
+      // Critical failure - network error, server error, etc.
       if (this.onComplete) {
         this.onComplete(false, `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
-
       this.terminate();
       return;
     } finally {
@@ -283,23 +267,11 @@ export class CSVWorkerManager {
   }
 
   private checkCompletion(): void {
-    if (this.parsingComplete && !this.uploadInProgress) {
-      this.progress.status = "completed";
-      this.notifyProgress();
+    if (this.parsingComplete && !this.uploadInProgress && !this.quotaExceeded) {
       if (this.onComplete) {
-        this.onComplete(true, `Import completed successfully: ${this.progress.importedEvents} events imported`);
+        this.onComplete(true, "Import completed successfully");
       }
     }
-  }
-
-  private notifyProgress(): void {
-    if (this.onProgress) {
-      this.onProgress({ ...this.progress });
-    }
-  }
-
-  getProgress(): ImportProgress {
-    return { ...this.progress };
   }
 
   terminate(): void {

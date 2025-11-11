@@ -29,22 +29,14 @@ export interface UmamiEvent {
 // Batch import request (client sends raw rows to server)
 export interface BatchImportRequest {
   events: UmamiEvent[]; // Raw Umami CSV rows
-  importId: string;
+  isLastBatch?: boolean; // Signal that this is the final batch
 }
 
 // Batch import response
 export interface BatchImportResponse {
   success: boolean;
   importedCount: number;
+  quotaExceeded?: boolean; // Indicates quota was exceeded for this batch
   message?: string;
   error?: string;
-}
-
-// Import progress tracking
-export interface ImportProgress {
-  status: "idle" | "parsing" | "uploading" | "completed" | "failed";
-  parsedRows: number;
-  skippedRows: number;
-  importedEvents: number;
-  errors: number;
 }

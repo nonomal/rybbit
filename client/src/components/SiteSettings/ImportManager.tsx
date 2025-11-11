@@ -27,7 +27,6 @@ import { useGetSiteImports, useCreateSiteImport, useDeleteSiteImport } from "@/a
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { IS_CLOUD } from "@/lib/const";
 import { CSVWorkerManager } from "@/lib/import/csv-worker-manager";
-import type { ImportProgress } from "@/lib/import/types";
 
 interface ImportManagerProps {
   siteId: number;
@@ -80,8 +79,6 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
   const [pendingImportData, setPendingImportData] = useState<ImportFormData | null>(null);
   const [deleteImportId, setDeleteImportId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
-  const [showProgressDialog, setShowProgressDialog] = useState(false);
   const workerManagerRef = useRef<CSVWorkerManager | null>(null);
 
   const { data, isLoading, error } = useGetSiteImports(siteId);
@@ -134,20 +131,9 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
         const { importId, allowedDateRange } = response.data;
 
         // Step 2: Initialize worker manager
-        workerManagerRef.current = new CSVWorkerManager(
-          progress => {
-            setImportProgress(progress);
-          },
-          (success, message) => {
-            console.log(success ? "✅" : "❌", message);
-            // Import list will auto-refresh due to polling in useGetSiteImports
-          }
-        );
+        workerManagerRef.current = new CSVWorkerManager();
 
-        // Step 3: Show progress dialog
-        setShowProgressDialog(true);
-
-        // Step 4: Start CSV parsing and upload with allowed date range
+        // Step 3: Start CSV parsing and upload with allowed date range
         workerManagerRef.current.startImport(
           file,
           siteId,
@@ -489,61 +475,6 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-600 hover:bg-red-700">
               Delete Import
             </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Import Progress Dialog */}
-      <AlertDialog open={showProgressDialog} onOpenChange={setShowProgressDialog}>
-        <AlertDialogContent className="max-w-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Import Progress</AlertDialogTitle>
-            <AlertDialogDescription>
-              {importProgress?.status === "parsing" && "Parsing CSV file..."}
-              {importProgress?.status === "uploading" && "Uploading batches to server..."}
-              {importProgress?.status === "completed" && "Import completed!"}
-              {importProgress?.status === "failed" && "Import failed"}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="space-y-4">
-            {/* Progress Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Parsed Rows</p>
-                <p className="text-2xl font-bold">{importProgress?.parsedRows.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Skipped Rows</p>
-                <p className="text-2xl font-bold">{importProgress?.skippedRows.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Imported Events</p>
-                <p className="text-2xl font-bold">{importProgress?.importedEvents.toLocaleString()}</p>
-              </div>
-            </div>
-
-            {/* Errors */}
-            {importProgress && importProgress.errors > 0 && (
-              <div>
-                <p className="text-sm font-medium text-red-600">{importProgress.errors} parse errors occurred</p>
-              </div>
-            )}
-          </div>
-
-          <AlertDialogFooter>
-            {importProgress?.status === "completed" || importProgress?.status === "failed" ? (
-              <AlertDialogAction onClick={() => setShowProgressDialog(false)}>Close</AlertDialogAction>
-            ) : (
-              <AlertDialogCancel
-                onClick={() => {
-                  workerManagerRef.current?.terminate();
-                  setShowProgressDialog(false);
-                }}
-              >
-                Cancel Import
-              </AlertDialogCancel>
-            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

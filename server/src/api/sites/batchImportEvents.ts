@@ -17,6 +17,7 @@ const batchImportRequestSchema = z
     }),
     body: z.object({
       events: z.array(UmamiImportMapper.umamiEventKeyOnlySchema).min(1).max(10000),
+      isLastBatch: z.boolean().optional(),
     }),
   })
   .strict();
@@ -38,7 +39,7 @@ export async function batchImportEvents(request: FastifyRequest<BatchImportReque
     }
 
     const { site, importId } = parsed.data.params;
-    const { events } = parsed.data.body;
+    const { events, isLastBatch } = parsed.data.body;
     const siteId = Number(site);
 
     const userHasAccess = await getUserHasAdminAccessToSite(request, site);
@@ -112,20 +113,29 @@ export async function batchImportEvents(request: FastifyRequest<BatchImportReque
 
       if (eventsWithinQuota.length === 0) {
         const quotaSummary = quotaTracker.getSummary();
-        const errorMessage =
+        const quotaMessage =
           `All ${events.length} events exceeded monthly quotas or fell outside the ${quotaSummary.totalMonthsInWindow}-month historical window. ` +
           `${quotaSummary.monthsAtCapacity} of ${quotaSummary.totalMonthsInWindow} months are at full capacity.`;
 
-        return reply.status(400).send({
-          success: false,
-          error: "Quota exceeded",
-          message: errorMessage,
+        if (isLastBatch) {
+          await updateImportStatus(importId, "completed", quotaMessage);
+        }
+
+        return reply.send({
+          success: true,
+          importedCount: 0,
+          quotaExceeded: true,
+          message: quotaMessage,
         });
       }
 
       const transformedEvents = UmamiImportMapper.transform(eventsWithinQuota, site, importId);
 
       if (transformedEvents.length === 0) {
+        if (isLastBatch) {
+          await updateImportStatus(importId, "completed", "No valid events found in the final batch");
+        }
+
         return reply.send({
           success: true,
           importedCount: 0,
@@ -141,16 +151,27 @@ export async function batchImportEvents(request: FastifyRequest<BatchImportReque
 
       await updateImportProgress(importId, transformedEvents.length);
 
+      if (isLastBatch) {
+        const finalMessage =
+          skippedDueToQuota > 0
+            ? `Import completed. ${skippedDueToQuota} events were skipped due to quota limits.`
+            : undefined;
+        await updateImportStatus(importId, "completed", finalMessage);
+      }
+
       return reply.send({
         success: true,
         importedCount: transformedEvents.length,
         message: `Imported ${transformedEvents.length} events${skippedDueToQuota > 0 ? ` (${skippedDueToQuota} skipped due to quota)` : ""}`,
       });
     } catch (insertError) {
+      const errorMessage = insertError instanceof Error ? insertError.message : "Unknown error";
+      await updateImportStatus(importId, "failed", `Failed to insert events: ${errorMessage}`);
+
       return reply.status(500).send({
         success: false,
         error: "Failed to insert events",
-        message: insertError instanceof Error ? insertError.message : "Unknown error",
+        message: errorMessage,
       });
     }
   } catch (error) {

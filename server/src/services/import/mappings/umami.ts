@@ -2,10 +2,7 @@ import { clearSelfReferrer, getAllUrlParams } from "../../tracker/utils.js";
 import { getChannel } from "../../tracker/getChannel.js";
 import { RybbitEvent } from "./rybbit.js";
 import { z } from "zod";
-import { createServiceLogger } from "../../../lib/logger/logger.js";
 import { deriveKeyOnlySchema } from "./utils.js";
-
-const logger = createServiceLogger("import:umami-mapper");
 
 export interface UmamiEvent {
   // website_id: string; // Ignore
@@ -161,7 +158,6 @@ export class UmamiImportMapper {
     return events.reduce<RybbitEvent[]>((acc, event) => {
       const parsed = UmamiImportMapper.umamiEventSchema.safeParse(event);
       if (!parsed.success) {
-        logger.error({ site, importId, error: parsed.error.flatten() }, "Invalid Umami event");
         return acc;
       }
 
