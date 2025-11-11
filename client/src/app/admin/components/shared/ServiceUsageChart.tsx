@@ -110,7 +110,7 @@ export function ServiceUsageChart({ startDate, endDate, title }: ServiceUsageCha
       <ResponsiveLine
         data={chartData}
         theme={nivoTheme}
-        margin={{ top: 10, right: 10, bottom: 25, left: 50 }}
+        margin={{ top: 10, right: 10, bottom: 25, left: 40 }}
         xScale={{
           type: "time",
           format: "%Y-%m-%d",
@@ -163,7 +163,7 @@ export function ServiceUsageChart({ startDate, endDate, title }: ServiceUsageCha
 
           return (
             <div className="text-sm bg-neutral-850 p-3 rounded-md min-w-[100px] border border-neutral-750">
-              <div className="font-medium mb-1">{currentTime.toLocaleString(DateTime.DATE_MED)}</div>
+              <div className="font-medium mb-1">{currentTime.toLocaleString(DateTime.DATE_SHORT)}</div>
               {slice.points
                 .sort((a: any, b: any) => a.seriesId.localeCompare(b.seriesId))
                 .map((point: any) => {

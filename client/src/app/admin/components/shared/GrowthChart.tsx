@@ -34,8 +34,9 @@ export function GrowthChart({ data, color = "#3b82f6", title }: GrowthChartProps
       .map(([date, count]) => ({
         x: date,
         y: count,
+        currentTime: DateTime.fromISO(date),
       }))
-      .sort((a, b) => a.x.localeCompare(b.x));
+      .sort((a, b) => a.currentTime.toMillis() - b.currentTime.toMillis());
 
     return [
       {
@@ -58,7 +59,7 @@ export function GrowthChart({ data, color = "#3b82f6", title }: GrowthChartProps
       <ResponsiveLine
         data={chartData}
         theme={nivoTheme}
-        margin={{ top: 10, right: 10, bottom: 25, left: 50 }}
+        margin={{ top: 10, right: 10, bottom: 25, left: 40 }}
         xScale={{
           type: "time",
           format: "%Y-%m-%d",
@@ -109,7 +110,7 @@ export function GrowthChart({ data, color = "#3b82f6", title }: GrowthChartProps
 
           return (
             <div className="text-sm bg-neutral-850 p-3 rounded-md min-w-[100px] border border-neutral-750">
-              <div className="font-medium mb-1">{currentTime.toLocaleString(DateTime.DATE_MED)}</div>
+              <div className="font-medium mb-1">{point.data.currentTime.toLocaleString(DateTime.DATE_SHORT)}</div>
               <div className="flex justify-between gap-4 text-sm">
                 <div className="flex items-center gap-2 text-neutral-300">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: point.seriesColor }} />
