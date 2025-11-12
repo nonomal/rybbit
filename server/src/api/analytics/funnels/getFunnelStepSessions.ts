@@ -66,10 +66,7 @@ export async function getFunnelStepSessions(req: FastifyRequest<GetFunnelStepSes
 
       if (step.type === "page") {
         const regex = patternToRegex(step.value);
-        // Manually escape single quotes in the regex and wrap in quotes
-        // Don't use SqlString.escape() as it doesn't preserve the regex correctly
-        const safeRegex = regex.replace(/'/g, "\\'");
-        condition = `type = 'pageview' AND match(pathname, '${safeRegex}')`;
+        condition = `type = 'pageview' AND match(pathname, ${SqlString.escape(regex)})`;
       } else {
         condition = `type = 'custom_event' AND event_name = ${SqlString.escape(step.value)}`;
 
