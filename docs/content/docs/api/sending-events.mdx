@@ -1,18 +1,19 @@
 ---
-title: API
+title: Sending Events
 description: Track events from server-side applications, mobile apps, or any platform using the HTTP API
 ---
 
 import { Steps, Step } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 
-Track events from server-side applications, mobile apps, or any platform using the HTTP API with authentication.
+Track events from server-side applications, mobile apps, or any platform using the HTTP API.
 
 ## Overview
 
-The `/api/track` endpoint accepts tracking requests with API key authentication, bypassing domain validation. This enables server-side tracking, mobile app analytics, and programmatic event collection.
+The `/api/track` endpoint accepts tracking requests for pageviews, custom events, and more. Using an API key is optional but recommended for server-side tracking as it bypasses bot detection and domain validation.
 
 ### Data Enrichment
 
@@ -23,13 +24,23 @@ The `/api/track` endpoint accepts tracking requests with API key authentication,
 
 <Steps>
 <Step>
-### Generate API Key
+### Generate API Key (Optional)
 
-In your site dashboard: Settings → API Key tab → Generate API Key
+API keys are recommended for server-side tracking to bypass bot detection.
+
+1. Navigate to **Settings → Account** in your Rybbit dashboard
+2. Scroll to the **API Keys** section
+3. Enter a name for your API key
+4. Click **Create**
+5. Copy the key immediately (it won't be shown again)
+
+<Callout type="info">
+API keys are user-scoped and grant access to all sites in your organization(s).
+</Callout>
 </Step>
 
 <Step>
-### Include in Requests
+### Send Tracking Requests
 
 <Tabs items={['Pageview', 'Custom Event']}>
 <Tab value="Pageview">
@@ -68,24 +79,262 @@ curl -X POST 'https://app.rybbit.io/api/track' \
 
 ## Parameters
 
-| Parameter | Type | Required | Description |
-| :-------- | :--- | :------- | :---------- |
-| `api_key` | string | **Required** | Your generated API key (starts with `rb_`) |
-| `site_id` | string | **Required** | Your site ID |
-| `type` | string | Optional | Event type: `pageview` or `custom_event` (defaults to `pageview`) |
-| `pathname` | string | Optional | Page path |
-| `hostname` | string | Optional | Domain name |
-| `page_title` | string | Optional | Page title (max 512 chars) |
-| `referrer` | string | Optional | Referrer URL (max 2048 chars) |
-| `user_id` | string | Optional | Custom user identifier (max 255 chars) |
-| `user_agent` | string | Optional | Custom user agent string (max 512 chars) - will be parsed for browser/OS/device info |
-| `ip_address` | string | Optional | Custom IP for geolocation - will be resolved to location data |
-| `querystring` | string | Optional | Query parameters |
-| `language` | string | Optional | Language code (e.g., "en") |
-| `screenWidth` | number | Optional | Screen width in logical pixels (density-independent pixels) |
-| `screenHeight` | number | Optional | Screen height in logical pixels (density-independent pixels) |
-| `event_name` | string | **Custom events only** | Event name (required for custom events, max 256 chars) |
-| `properties` | string | **Custom events only** | JSON string with event data (max 2048 chars) |
+All parameters are sent in the request body as JSON.
+
+<TypeTable
+  type={{
+    api_key: {
+      description: 'Your generated API key - bypasses bot detection',
+      type: 'string',
+      typeDescription: 'Starts with "rb_"',
+      required: false,
+    },
+    site_id: {
+      description: 'Your site ID',
+      type: 'string',
+      required: true,
+    },
+    type: {
+      description: 'Event type',
+      type: 'string',
+      typeDescription: '"pageview" | "custom_event" | "performance" | "outbound" | "error"',
+      default: 'pageview',
+    },
+    pathname: {
+      description: 'Page path',
+      type: 'string',
+      typeDescription: 'Max 2048 chars',
+    },
+    hostname: {
+      description: 'Domain name',
+      type: 'string',
+      typeDescription: 'Max 253 chars',
+    },
+    page_title: {
+      description: 'Page title',
+      type: 'string',
+      typeDescription: 'Max 512 chars',
+    },
+    referrer: {
+      description: 'Referrer URL',
+      type: 'string',
+      typeDescription: 'Max 2048 chars',
+    },
+    user_id: {
+      description: 'Custom user identifier',
+      type: 'string',
+      typeDescription: 'Max 255 chars',
+    },
+    user_agent: {
+      description: 'Custom user agent string - will be parsed for browser/OS/device info',
+      type: 'string',
+      typeDescription: 'Max 512 chars',
+    },
+    ip_address: {
+      description: 'Custom IP for geolocation - will be resolved to location data',
+      type: 'string',
+      typeDescription: 'Valid IPv4 or IPv6 address',
+    },
+    querystring: {
+      description: 'Query parameters',
+      type: 'string',
+      typeDescription: 'Max 2048 chars',
+    },
+    language: {
+      description: 'Language code',
+      type: 'string',
+      typeDescription: 'e.g., "en", "es", "fr"',
+    },
+    screenWidth: {
+      description: 'Screen width in logical pixels (density-independent pixels)',
+      type: 'number',
+    },
+    screenHeight: {
+      description: 'Screen height in logical pixels (density-independent pixels)',
+      type: 'number',
+    },
+    event_name: {
+      description: 'Event name (required for custom events)',
+      type: 'string',
+      typeDescription: 'Max 256 chars',
+    },
+    properties: {
+      description: 'JSON string with event data (for custom events, outbound, error)',
+      type: 'string',
+      typeDescription: 'Max 2048 chars (4096 for error events)',
+    },
+  }}
+/>
+
+### Event Types
+
+#### Pageview
+Standard page view tracking. Set `type: "pageview"` (default).
+
+#### Custom Event
+Track custom events with optional properties. Set `type: "custom_event"`.
+
+**Required fields:**
+<TypeTable
+  type={{
+    event_name: {
+      description: 'Name of the custom event',
+      type: 'string',
+      typeDescription: 'Max 256 chars',
+      required: true,
+    },
+    properties: {
+      description: 'Event data as JSON string',
+      type: 'string',
+      typeDescription: 'Valid JSON, max 2048 chars',
+    },
+  }}
+/>
+
+**Example:**
+```json
+{
+  "type": "custom_event",
+  "event_name": "purchase",
+  "properties": "{\"amount\": 99.99, \"currency\": \"USD\"}"
+}
+```
+
+#### Performance
+Track Core Web Vitals. Set `type: "performance"`.
+
+**Performance metrics:**
+<TypeTable
+  type={{
+    lcp: {
+      description: 'Largest Contentful Paint in milliseconds',
+      type: 'number',
+      typeDescription: 'nullable',
+    },
+    cls: {
+      description: 'Cumulative Layout Shift score',
+      type: 'number',
+      typeDescription: 'nullable, typically 0-1',
+    },
+    inp: {
+      description: 'Interaction to Next Paint in milliseconds',
+      type: 'number',
+      typeDescription: 'nullable',
+    },
+    fcp: {
+      description: 'First Contentful Paint in milliseconds',
+      type: 'number',
+      typeDescription: 'nullable',
+    },
+    ttfb: {
+      description: 'Time to First Byte in milliseconds',
+      type: 'number',
+      typeDescription: 'nullable',
+    },
+  }}
+/>
+
+**Example:**
+```json
+{
+  "type": "performance",
+  "lcp": 2500,
+  "cls": 0.1,
+  "inp": 200,
+  "fcp": 1800,
+  "ttfb": 600
+}
+```
+
+#### Outbound
+Track outbound link clicks. Set `type: "outbound"`.
+
+**Properties format:**
+<TypeTable
+  type={{
+    url: {
+      description: 'Destination URL',
+      type: 'string',
+      required: true,
+    },
+    text: {
+      description: 'Link text content',
+      type: 'string',
+    },
+    target: {
+      description: 'Link target attribute',
+      type: 'string',
+      typeDescription: 'e.g., "_blank", "_self"',
+    },
+  }}
+/>
+
+**Example:**
+```json
+{
+  "type": "outbound",
+  "properties": "{\"url\": \"https://example.com\", \"text\": \"Click here\", \"target\": \"_blank\"}"
+}
+```
+
+#### Error
+Track JavaScript errors. Set `type: "error"`.
+
+**Required fields:**
+<TypeTable
+  type={{
+    event_name: {
+      description: 'Error type',
+      type: 'string',
+      typeDescription: 'e.g., "TypeError", "ReferenceError"',
+      required: true,
+    },
+    properties: {
+      description: 'Error details as JSON string',
+      type: 'string',
+      typeDescription: 'Valid JSON, max 4096 chars',
+      required: true,
+    },
+  }}
+/>
+
+**Properties format:**
+<TypeTable
+  type={{
+    message: {
+      description: 'Error message',
+      type: 'string',
+      typeDescription: 'Max 500 chars',
+      required: true,
+    },
+    stack: {
+      description: 'Stack trace',
+      type: 'string',
+      typeDescription: 'Max 2000 chars',
+    },
+    fileName: {
+      description: 'File where error occurred',
+      type: 'string',
+    },
+    lineNumber: {
+      description: 'Line number',
+      type: 'number',
+    },
+    columnNumber: {
+      description: 'Column number',
+      type: 'number',
+    },
+  }}
+/>
+
+**Example:**
+```json
+{
+  "type": "error",
+  "event_name": "TypeError",
+  "properties": "{\"message\": \"Cannot read property\", \"stack\": \"...\", \"fileName\": \"app.js\", \"lineNumber\": 42}"
+}
+```
 
 ## Language Examples
 
@@ -104,7 +353,7 @@ const trackEvent = async (eventData) => {
       ...eventData
     })
   });
-  
+
   return response.json();
 };
 
@@ -184,12 +433,12 @@ type TrackingEvent struct {
 func trackEvent(event TrackingEvent) error {
     event.APIKey = os.Getenv("RYBBIT_API_KEY")
     event.SiteID = os.Getenv("RYBBIT_SITE_ID")
-    
+
     jsonData, err := json.Marshal(event)
     if err != nil {
         return err
     }
-    
+
     resp, err := http.Post(
         "https://app.rybbit.io/api/track",
         "application/json",
@@ -199,7 +448,7 @@ func trackEvent(event TrackingEvent) error {
         return err
     }
     defer resp.Body.Close()
-    
+
     return nil
 }
 
@@ -210,7 +459,7 @@ func main() {
         Pathname: "/api/users",
         Hostname: "api.example.com",
     })
-    
+
     // Track a custom event
     trackEvent(TrackingEvent{
         Type:       "custom_event",
@@ -236,40 +485,40 @@ public class RybbitTracker {
     private static final String API_URL = "https://app.rybbit.io/api/track";
     private static final String API_KEY = System.getenv("RYBBIT_API_KEY");
     private static final String SITE_ID = System.getenv("RYBBIT_SITE_ID");
-    
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     public void trackEvent(Map<String, Object> eventData) throws Exception {
         eventData.put("api_key", API_KEY);
         eventData.put("site_id", SITE_ID);
-        
+
         String json = objectMapper.writeValueAsString(eventData);
-        
+
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(API_URL))
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(json))
             .build();
-            
-        HttpResponse<String> response = httpClient.send(request, 
+
+        HttpResponse<String> response = httpClient.send(request,
             HttpResponse.BodyHandlers.ofString());
-            
+
         if (response.statusCode() != 200) {
             throw new Exception("Tracking failed: " + response.body());
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
         RybbitTracker tracker = new RybbitTracker();
-        
+
         // Track a pageview
         Map<String, Object> pageview = new HashMap<>();
         pageview.put("type", "pageview");
         pageview.put("pathname", "/api/users");
         pageview.put("hostname", "api.example.com");
         tracker.trackEvent(pageview);
-        
+
         // Track a custom event
         Map<String, Object> customEvent = new HashMap<>();
         customEvent.put("type", "custom_event");
@@ -290,30 +539,30 @@ class RybbitTracker {
     private $apiUrl = 'https://app.rybbit.io/api/track';
     private $apiKey;
     private $siteId;
-    
+
     public function __construct() {
         $this->apiKey = getenv('RYBBIT_API_KEY');
         $this->siteId = getenv('RYBBIT_SITE_ID');
     }
-    
+
     public function trackEvent($eventData) {
         $eventData['api_key'] = $this->apiKey;
         $eventData['site_id'] = $this->siteId;
-        
+
         $ch = curl_init($this->apiUrl);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($eventData));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
+
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+
         if ($httpCode !== 200) {
             throw new Exception('Tracking failed: ' . $response);
         }
-        
+
         return json_decode($response, true);
     }
 }
@@ -346,30 +595,30 @@ require 'uri'
 
 class RybbitTracker
   API_URL = 'https://app.rybbit.io/api/track'
-  
+
   def initialize
     @api_key = ENV['RYBBIT_API_KEY']
     @site_id = ENV['RYBBIT_SITE_ID']
   end
-  
+
   def track_event(event_data)
     event_data[:api_key] = @api_key
     event_data[:site_id] = @site_id
-    
+
     uri = URI(API_URL)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    
+
     request = Net::HTTP::Post.new(uri.path)
     request['Content-Type'] = 'application/json'
     request.body = event_data.to_json
-    
+
     response = http.request(request)
-    
+
     unless response.code == '200'
       raise "Tracking failed: #{response.body}"
     end
-    
+
     JSON.parse(response.body)
   end
 end
@@ -409,35 +658,35 @@ public class RybbitTracker
     private readonly string _apiKey;
     private readonly string _siteId;
     private const string ApiUrl = "https://app.rybbit.io/api/track";
-    
+
     public RybbitTracker()
     {
         _httpClient = new HttpClient();
         _apiKey = Environment.GetEnvironmentVariable("RYBBIT_API_KEY");
         _siteId = Environment.GetEnvironmentVariable("RYBBIT_SITE_ID");
     }
-    
+
     public async Task TrackEventAsync(Dictionary<string, object> eventData)
     {
         eventData["api_key"] = _apiKey;
         eventData["site_id"] = _siteId;
-        
+
         var json = JsonSerializer.Serialize(eventData);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        
+
         var response = await _httpClient.PostAsync(ApiUrl, content);
-        
+
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
             throw new Exception($"Tracking failed: {error}");
         }
     }
-    
+
     static async Task Main(string[] args)
     {
         var tracker = new RybbitTracker();
-        
+
         // Track a pageview
         await tracker.TrackEventAsync(new Dictionary<string, object>
         {
@@ -445,7 +694,7 @@ public class RybbitTracker
             ["pathname"] = "/api/users",
             ["hostname"] = "api.example.com"
         });
-        
+
         // Track a custom event
         await tracker.TrackEventAsync(new Dictionary<string, object>
         {
@@ -482,22 +731,22 @@ impl RybbitTracker {
             api_url: "https://app.rybbit.io/api/track".to_string(),
         }
     }
-    
+
     async fn track_event(&self, mut event_data: Value) -> Result<(), Box<dyn std::error::Error>> {
         event_data["api_key"] = json!(self.api_key);
         event_data["site_id"] = json!(self.site_id);
-        
+
         let response = self.client
             .post(&self.api_url)
             .json(&event_data)
             .send()
             .await?;
-            
+
         if !response.status().is_success() {
             let error_text = response.text().await?;
             return Err(format!("Tracking failed: {}", error_text).into());
         }
-        
+
         Ok(())
     }
 }
@@ -505,14 +754,14 @@ impl RybbitTracker {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let tracker = RybbitTracker::new();
-    
+
     // Track a pageview
     tracker.track_event(json!({
         "type": "pageview",
         "pathname": "/api/users",
         "hostname": "api.example.com"
     })).await?;
-    
+
     // Track a custom event
     tracker.track_event(json!({
         "type": "custom_event",
@@ -520,7 +769,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "event_name": "purchase",
         "properties": r#"{"amount": 99.99, "currency": "USD"}"#
     })).await?;
-    
+
     Ok(())
 }
 ```
@@ -533,11 +782,11 @@ import UIKit
 
 class RybbitTracker {
     static let shared = RybbitTracker()
-    
+
     private let apiUrl = "https://app.rybbit.io/api/track"
     private let apiKey: String
     private let siteId: String
-    
+
     init() {
         // Ensure API key and site ID are available
         guard let apiKey = ProcessInfo.processInfo.environment["RYBBIT_API_KEY"],
@@ -549,15 +798,15 @@ class RybbitTracker {
         self.apiKey = apiKey
         self.siteId = siteId
     }
-    
+
     func trackEvent(_ eventData: [String: Any]) async throws {
         var data = eventData
         data["api_key"] = apiKey
         data["site_id"] = siteId
-        
+
         // Add device info
         data["user_agent"] = getUserAgent()
-        
+
         // Get screen dimensions in logical pixels (points)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             let bounds = windowScene.screen.bounds
@@ -569,22 +818,22 @@ class RybbitTracker {
             data["screenWidth"] = Int(bounds.width)
             data["screenHeight"] = Int(bounds.height)
         }
-        
+
         data["language"] = Locale.current.languageCode ?? "en"
-        
+
         var request = URLRequest(url: URL(string: apiUrl)!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: data)
-        
+
         let (_, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw NSError(domain: "RybbitTracker", code: 1, userInfo: [NSLocalizedDescriptionKey: "Tracking failed"])
         }
     }
-    
+
     private func getUserAgent() -> String {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let osVersion = UIDevice.current.systemVersion
@@ -602,7 +851,7 @@ Task {
         "hostname": "api.example.com",
         "page_title": "User API Endpoint"
     ])
-    
+
     // Track a custom event
     try await RybbitTracker.shared.trackEvent([
         "type": "custom_event",
@@ -630,39 +879,39 @@ class RybbitTracker(private val context: Context) {
         private const val API_URL = "https://app.rybbit.io/api/track"
         private val JSON = "application/json; charset=utf-8".toMediaType()
     }
-    
+
     private val client = OkHttpClient()
     private val apiKey = BuildConfig.RYBBIT_API_KEY // Set in build.gradle
     private val siteId = BuildConfig.RYBBIT_SITE_ID
-    
+
     suspend fun trackEvent(eventData: Map<String, Any>) = withContext(Dispatchers.IO) {
         val data = eventData.toMutableMap().apply {
             put("api_key", apiKey)
             put("site_id", siteId)
             put("user_agent", getUserAgent())
-            
+
             // Get screen dimensions in logical pixels (density-independent pixels)
             val displayMetrics = context.resources.displayMetrics
             put("screenWidth", (displayMetrics.widthPixels / displayMetrics.density).toInt())
             put("screenHeight", (displayMetrics.heightPixels / displayMetrics.density).toInt())
             put("language", Locale.getDefault().language)
         }
-        
+
         val json = JSONObject(data).toString()
         val body = json.toRequestBody(JSON)
-        
+
         val request = Request.Builder()
             .url(API_URL)
             .post(body)
             .build()
-            
+
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
                 throw Exception("Tracking failed: ${response.code}")
             }
         }
     }
-    
+
     private fun getUserAgent(): String {
         val appVersion = context.packageManager
             .getPackageInfo(context.packageName, 0).versionName
@@ -673,10 +922,10 @@ class RybbitTracker(private val context: Context) {
 // Usage
 class MainActivity : AppCompatActivity() {
     private val tracker = RybbitTracker(this)
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         lifecycleScope.launch {
             // Track a pageview
             tracker.trackEvent(mapOf(
@@ -685,7 +934,7 @@ class MainActivity : AppCompatActivity() {
                 "hostname" to "api.example.com",
                 "page_title" to "User API Endpoint"
             ))
-            
+
             // Track a custom event
             tracker.trackEvent(mapOf(
                 "type" to "custom_event",
@@ -711,41 +960,41 @@ class RybbitTracker {
   static final RybbitTracker _instance = RybbitTracker._internal();
   factory RybbitTracker() => _instance;
   RybbitTracker._internal();
-  
+
   static const String _apiUrl = 'https://app.rybbit.io/api/track';
   static const String _apiKey = String.fromEnvironment('RYBBIT_API_KEY');
   static const String _siteId = String.fromEnvironment('RYBBIT_SITE_ID');
-  
+
   final _deviceInfoPlugin = DeviceInfoPlugin();
-  
+
   Future<void> trackEvent(Map<String, dynamic> eventData) async {
     final data = Map<String, dynamic>.from(eventData);
     data['api_key'] = _apiKey;
     data['site_id'] = _siteId;
-    
+
     // Add device info
     data['user_agent'] = await _getUserAgent();
-    
+
     // Get screen dimensions in logical pixels (density-independent pixels)
     final view = WidgetsBinding.instance.platformDispatcher.views.first;
     data['screenWidth'] = (view.physicalSize.width / view.devicePixelRatio).round();
     data['screenHeight'] = (view.physicalSize.height / view.devicePixelRatio).round();
     data['language'] = Platform.localeName.split('_')[0];
-    
+
     final response = await http.post(
       Uri.parse(_apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(data),
     );
-    
+
     if (response.statusCode != 200) {
       throw Exception('Tracking failed: ${response.statusCode}');
     }
   }
-  
+
   Future<String> _getUserAgent() async {
     const appVersion = '1.0.0'; // Get from package_info_plus if needed
-    
+
     if (Platform.isAndroid) {
       final androidInfo = await _deviceInfoPlugin.androidInfo;
       return 'MyApp/$appVersion (Android ${androidInfo.version.release}; ${androidInfo.model})';
@@ -753,7 +1002,7 @@ class RybbitTracker {
       final iosInfo = await _deviceInfoPlugin.iosInfo;
       return 'MyApp/$appVersion (iOS ${iosInfo.systemVersion}; ${iosInfo.model})';
     }
-    
+
     return 'MyApp/$appVersion (${Platform.operatingSystem})';
   }
 }
@@ -770,7 +1019,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final tracker = RybbitTracker();
-  
+
   @override
   void initState() {
     super.initState();
@@ -782,7 +1031,7 @@ class _MyAppState extends State<MyApp> {
       'page_title': 'User API Endpoint',
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -822,7 +1071,7 @@ class _MyAppState extends State<MyApp> {
 ```json
 {
   "success": false,
-  "error": "Invalid API key",
+  "error": "Invalid payload",
   "details": {
     "fieldErrors": {},
     "formErrors": ["Custom events require event_name"]
@@ -832,95 +1081,16 @@ class _MyAppState extends State<MyApp> {
 
 ## Rate Limiting
 
-API key authenticated requests are rate limited to **20 requests per second per API key** on Rybbit Cloud. Self-hosted instances have no rate limits.
-
-When you exceed the rate limit, you'll receive a `429` status code:
+API keys have built-in rate limiting:
+- **500 requests per 10 minutes** per API key
+- When exceeded, you'll receive a `429` status code
 
 ```json
 {
   "success": false,
-  "error": "Rate limit exceeded. Maximum 20 requests per second per API key."
+  "error": "Rate limit exceeded. Maximum 500 requests per 10 minutes per API key."
 }
 ```
-
-## Configuration Endpoints
-
-### Get Excluded IPs
-
-Retrieve the list of excluded IP addresses for a site.
-
-```bash
-GET /api/site/:siteId/excluded-ips
-Authorization: Bearer <your-token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "excludedIPs": ["192.168.1.0/24", "10.0.0.1"]
-}
-```
-
-### Get Excluded Countries
-
-Retrieve the list of excluded countries for a site.
-
-```bash
-GET /api/site/:siteId/excluded-countries
-Authorization: Bearer <your-token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "excludedCountries": ["US", "GB", "CN"]
-}
-```
-
-### Update Site Configuration
-
-Update site configuration including IP and country exclusions.
-
-```bash
-POST /api/site/:siteId/config
-Authorization: Bearer <your-token>
-Content-Type: application/json
-
-{
-  "excludedIPs": ["192.168.1.0/24", "10.0.0.1"],
-  "excludedCountries": ["US", "GB"],
-  "blockBots": true,
-  "sessionReplay": false
-}
-```
-
-**Request Parameters:**
-- `excludedIPs` (string[]): List of IP addresses/ranges to exclude (max 100)
-- `excludedCountries` (string[]): List of 2-letter ISO country codes to exclude (max 250)
-- `blockBots` (boolean): Enable/disable bot traffic blocking
-- `sessionReplay` (boolean): Enable/disable session replay
-- Other site configuration options (see [Site Settings](/docs/site-settings))
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Site configuration updated successfully",
-  "config": {
-    "excludedIPs": ["192.168.1.0/24"],
-    "excludedCountries": ["US", "GB"],
-    "blockBots": true
-  }
-}
-```
-
-**Country Code Validation:**
-- Must be uppercase 2-letter ISO 3166-1 alpha-2 codes (e.g., `US`, `GB`, `CN`)
-- Invalid codes will return a 400 error with validation details
-
-See the [Filter Traffic](/docs/filter-traffic) documentation for more details on traffic filtering.
 
 ## Best Practices
 
@@ -928,15 +1098,26 @@ See the [Filter Traffic](/docs/filter-traffic) documentation for more details on
 **Environment Variables**: Store your API key and site ID as environment variables to keep them secure.
 </Callout>
 
-<Callout type="error">
-**API Key Security**: Never expose API keys in client-side code or public repositories.
+<Callout type="warn">
+**API Key Security**: Never expose API keys in client-side code or public repositories. Use them only for server-side tracking.
+</Callout>
+
+<Callout type="info">
+**Browser Tracking**: For standard browser-based tracking, use the [Rybbit Web SDK](/docs/sdks/web) instead. The HTTP API is designed for server-side applications, mobile apps, and custom integrations.
+</Callout>
+
+<Callout type="info">
+**Organization Access**: API keys are user-scoped and grant access to all sites in your organization(s). Ensure the API key owner is a member of the organization that owns the site you're tracking.
 </Callout>
 
 ## Error Handling
 
 Common error scenarios:
-- **Invalid API key**: Check that your API key starts with `rb_` and hasn't been revoked
-- **Site not found**: Verify your site ID is correct
 - **Invalid payload**: Ensure required fields are present and data types match
+- **Site not found**: Verify your site ID is correct
+- **Invalid API key**: Check that your API key is valid and hasn't expired
+- **Access denied**: Ensure the API key owner is a member of the site's organization
+- **Rate limit exceeded**: Reduce request frequency or implement request queuing
 - **JSON parsing errors**: For custom events, ensure properties field contains valid JSON
-- **Rate limit exceeded**: Reduce request frequency or implement request queuing with delays
+- **Bot detected**: Use an API key to bypass bot detection for server-side tracking
+- **Over monthly limit**: Your site has exceeded its monthly pageview limit

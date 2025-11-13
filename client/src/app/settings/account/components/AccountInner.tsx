@@ -195,7 +195,7 @@ export function AccountInner() {
         </CardContent>
       </Card>
 
-      <ApiKeyManager />
+      {IS_CLOUD && <ApiKeyManager />}
     </div>
   );
 }
