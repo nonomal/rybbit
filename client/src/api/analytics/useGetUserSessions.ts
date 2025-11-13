@@ -59,6 +59,7 @@ export function useGetSessions(userId?: string, page: number = 1, limit: number 
         time_zone: timeZone,
         filters: filteredFilters,
         page,
+        limit,
       };
 
       // Add userId if provided

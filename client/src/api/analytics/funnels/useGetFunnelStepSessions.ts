@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { Time } from "../../../components/DateSelector/types";
+import { FUNNEL_PAGE_FILTERS } from "../../../lib/filterGroups";
+import { getFilteredFilters } from "../../../lib/store";
 import { authedFetch, getQueryParams } from "../../utils";
 import { GetSessionsResponse } from "../useGetUserSessions";
-import { Time } from "../../../components/DateSelector/types";
 import { FunnelStep } from "./useGetFunnel";
-import { Filter } from "@rybbit/shared";
-import { getFilteredFilters } from "../../../lib/store";
-import { FUNNEL_PAGE_FILTERS } from "../../../lib/filterGroups";
 
 interface FunnelStepSessionsResponse {
   data: GetSessionsResponse;
@@ -29,7 +28,6 @@ export function useGetFunnelStepSessions({
   page?: number;
   limit?: number;
   enabled?: boolean;
-  filters?: Filter[];
 }) {
   const timeParams = getQueryParams(time);
   const filteredFilters = getFilteredFilters(FUNNEL_PAGE_FILTERS);
