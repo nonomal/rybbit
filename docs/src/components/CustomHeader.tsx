@@ -34,6 +34,18 @@ export function CustomHeader() {
             <Link href="/blog" className="text-sm font-base text-neutral-400 hover:text-white transition-colors">
               Blog
             </Link>
+            <Link href="/updates" className="text-sm font-base text-neutral-400 hover:text-white transition-colors">
+              Updates
+            </Link>
+            <a
+              href="https://demo.rybbit.com/21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-base text-neutral-400 hover:text-white transition-colors"
+              onClick={() => trackAdEvent("demo", { location: "header" })}
+            >
+              Demo
+            </a>
           </div>
         </div>
 
@@ -115,6 +127,22 @@ export function CustomHeader() {
             >
               Blog
             </Link>
+            <Link
+              href="/updates"
+              className="block rounded-md px-3 py-2 text-base font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Updates
+            </Link>
+            <a
+              href="https://demo.rybbit.com/21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-md px-3 py-2 text-base font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Demo
+            </a>
             <a
               href="https://github.com/rybbit-io/rybbit"
               target="_blank"
