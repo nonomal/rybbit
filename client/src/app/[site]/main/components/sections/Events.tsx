@@ -22,7 +22,7 @@ function Events_() {
         </div>
       )}
       <div className="relative max-h-[420px] overflow-y-auto">
-        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-400 mb-2">
+        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-600 dark:text-neutral-400 mb-2">
           <div>Custom Events</div>
           <div>Count</div>
         </div>
@@ -43,7 +43,7 @@ function OutboundLinks({ expanded, close }: { expanded: boolean; close: () => vo
         </div>
       )}
       <div className="relative">
-        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-400 mb-2">
+        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-600 dark:text-neutral-400 mb-2">
           <div>Outbound Links</div>
           <div>Clicks</div>
         </div>

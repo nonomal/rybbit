@@ -92,7 +92,7 @@ export function StandardSectionDialog({
             {getLink && (
               <a href={getLink(row.original)} target="_blank" onClick={e => e.stopPropagation()}>
                 <SquareArrowOutUpRight
-                  className="ml-0.5 w-3.5 h-3.5 text-neutral-300 hover:text-neutral-100"
+                  className="ml-0.5 w-3.5 h-3.5 text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
                   strokeWidth={3}
                 />
               </a>
@@ -191,7 +191,7 @@ export function StandardSectionDialog({
       <Dialog open={expanded} onOpenChange={close}>
         <DialogContent className="max-w-[1000px] w-[calc(100vw-2rem)] p-2 sm:p-4">
           <div className="flex justify-center items-center h-40">
-            <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-neutral-600 dark:text-neutral-400" />
           </div>
         </DialogContent>
       </Dialog>
@@ -206,11 +206,11 @@ export function StandardSectionDialog({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-400" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-neutral-600 dark:text-neutral-400" />
           <Input
             type="text"
             placeholder={`Filter ${allItems.length} items...`}
-            className="pl-9 bg-neutral-900 border-neutral-700 text-xs"
+            className="pl-9 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-xs"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -218,7 +218,7 @@ export function StandardSectionDialog({
         <div className="flex flex-col gap-2 overflow-x-auto">
           <div className="max-h-[80vh] overflow-y-auto">
             <table className="w-full text-xs text-left min-w-max">
-              <thead className="bg-neutral-900 text-neutral-400 sticky top-0 z-10">
+              <thead className="bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 sticky top-0 z-10">
                 {table.getHeaderGroups().map(headerGroup => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header, index) => (
@@ -254,8 +254,8 @@ export function StandardSectionDialog({
                     <tr
                       key={row.id}
                       className={cn(
-                        "border-b border-neutral-800 hover:bg-neutral-850 cursor-pointer group",
-                        rowIndex % 2 === 0 ? "bg-neutral-900" : "bg-neutral-950"
+                        "border-b border-neutral-300 dark:border-neutral-800 hover:bg-neutral-150 dark:hover:bg-neutral-850 cursor-pointer group",
+                        rowIndex % 2 === 0 ? "bg-white dark:bg-neutral-900" : "bg-neutral-50 dark:bg-neutral-950"
                       )}
                       onClick={() =>
                         addFilter({
@@ -283,13 +283,13 @@ export function StandardSectionDialog({
             {filteredData.length > 0 && (
               <div ref={ref} className="py-4 flex justify-center">
                 {isFetchingNextPage && (
-                  <div className="flex items-center gap-2 text-neutral-400 text-xs">
+                  <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 text-xs">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Loading more...
                   </div>
                 )}
                 {!hasNextPage && !isFetchingNextPage && (
-                  <div className="text-neutral-500 text-xs">All items loaded</div>
+                  <div className="text-neutral-500 dark:text-neutral-500 text-xs">All items loaded</div>
                 )}
               </div>
             )}

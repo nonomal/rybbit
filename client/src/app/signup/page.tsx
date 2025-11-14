@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import { addSite } from "../../api/admin/sites";
+import { RybbitLogo } from "../../components/RybbitLogo";
 import { useSetPageTitle } from "../../hooks/useSetPageTitle";
 import { authClient } from "../../lib/auth";
 import { useConfigs } from "../../lib/configs";
@@ -357,7 +358,7 @@ export default function SignupPage() {
       <div className="flex justify-center items-center h-dvh w-full">
         <Card className="w-full max-w-sm p-1">
           <CardHeader>
-            <Image src="/rybbit.svg" alt="Rybbit" width={32} height={32} />
+            <RybbitLogo width={32} height={32} />
             <CardTitle className="text-2xl flex justify-center">Sign Up Disabled</CardTitle>
           </CardHeader>
           <CardContent>

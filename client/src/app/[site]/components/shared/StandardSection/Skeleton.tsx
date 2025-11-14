@@ -32,19 +32,19 @@ export const StandardSkeleton = memo(() => {
       {Array.from({ length: 10 }).map((_, index) => (
         <div key={index} className="relative h-6 flex items-center">
           <div
-            className="absolute inset-0 bg-neutral-800 py-2 rounded-md animate-pulse"
+            className="absolute inset-0 bg-neutral-200 dark:bg-neutral-800 py-2 rounded-md animate-pulse"
             style={{ width: `${widths[index]}%` }}
           ></div>
           <div className="z-5 mx-2 flex justify-between items-center text-sm w-full">
             <div className="flex items-center gap-1">
               <div
-                className="h-4 bg-neutral-800 rounded animate-pulse"
+                className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded animate-pulse"
                 style={{ width: `${labelWidths[index]}px` }}
               ></div>
             </div>
             <div className="text-sm flex gap-2">
               <div
-                className="h-4 bg-neutral-800 rounded animate-pulse"
+                className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded animate-pulse"
                 style={{ width: `${valueWidths[index]}px` }}
               ></div>
             </div>

@@ -62,8 +62,8 @@ function SidebarContent() {
   };
 
   return (
-    <div className="w-56 bg-neutral-900 border-r border-neutral-850 flex flex-col h-dvh">
-      <div className="flex flex-col p-3 border-b border-neutral-800">
+    <div className="w-56 bg-neutral-100 border-r border-neutral-200 dark:bg-neutral-900 dark:border-neutral-850 flex flex-col h-dvh">
+      <div className="flex flex-col p-3 border-b border-neutral-300 dark:border-neutral-800">
         <SiteSelector />
       </div>
       <div className="flex flex-col p-3 pt-1">
@@ -180,7 +180,7 @@ function SidebarContent() {
             <SiteSettings
               siteId={site?.siteId ?? 0}
               trigger={
-                <div className="px-3 py-2 rounded-lg transition-colors w-full text-neutral-200 hover:text-white hover:bg-neutral-800/50 cursor-pointer">
+                <div className="px-3 py-2 rounded-lg transition-colors w-full text-neutral-700 hover:text-neutral-900 hover:bg-neutral-150 dark:text-neutral-200 dark:hover:text-white dark:hover:bg-neutral-800/50 cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
                     <span className="text-sm">Site Settings</span>

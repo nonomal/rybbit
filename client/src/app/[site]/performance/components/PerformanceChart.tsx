@@ -6,11 +6,11 @@ import { nivoTheme } from "@/lib/nivo";
 import { ResponsiveLine } from "@nivo/line";
 import { DateTime } from "luxon";
 import { Tilt_Warp } from "next/font/google";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useGetPerformanceTimeSeries } from "../../../../api/analytics/performance/useGetPerformanceTimeSeries";
 import { BucketSelection } from "../../../../components/BucketSelection";
+import { RybbitLogo } from "../../../../components/RybbitLogo";
 import { authClient } from "../../../../lib/auth";
 import { formatChartDateTime, hour12, userLocale } from "../../../../lib/dateTimeUtils";
 import { useStore } from "../../../../lib/store";
@@ -195,7 +195,7 @@ export function PerformanceChart() {
               href={session.data ? "/" : "https://rybbit.com"}
               className={cn("text-lg font-semibold flex items-center gap-1.5 opacity-75", tilt_wrap.className)}
             >
-              <Image src="/rybbit.svg" alt="Rybbit" width={20} height={20} />
+              <RybbitLogo width={20} height={20} />
               rybbit.com
             </Link>
           </div>

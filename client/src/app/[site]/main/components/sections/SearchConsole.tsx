@@ -19,7 +19,7 @@ function ConnectPrompt() {
 
   return (
     <div className="flex flex-col items-center justify-center mt-12 gap-4">
-      <div className="text-sm text-neutral-400 text-center max-w-sm">
+      <div className="text-sm text-neutral-600 dark:text-neutral-400 text-center max-w-sm">
         Connect your Google Search Console account to view search performance data including top keywords and pages.
       </div>
       <Button onClick={() => connect()} disabled={isPending}>
@@ -54,7 +54,7 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
       )}
       <div className="flex flex-col gap-2 max-h-[344px] overflow-y-auto z-10">
         <div className="flex flex-col gap-2 overflow-x-hidden">
-          <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-400">
+          <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-600 dark:text-neutral-400">
             <div className="flex flex-row gap-1 items-center">{label}</div>
             <div className="flex flex-row gap-2">
               <div className="w-20 text-right">Clicks</div>
@@ -67,7 +67,7 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
               return (
                 <div
                   key={index}
-                  className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-850 rounded px-2 group"
+                  className="relative flex flex-row gap-2 justify-between pr-1 text-xs py-1 hover:bg-neutral-150 dark:hover:bg-neutral-850 rounded px-2 group"
                 >
                   <div
                     className="absolute inset-0 bg-dataviz py-2 opacity-25 rounded-md"
@@ -78,7 +78,7 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
                   </div>
                   <div className="flex flex-row gap-2 z-10">
                     <div className="w-28 text-right pr-1 flex flex-row gap-2 items-center justify-end">
-                      <div className="hidden group-hover:block text-neutral-400">{round(percentage * 100, 1)}%</div>
+                      <div className="hidden group-hover:block text-neutral-600 dark:text-neutral-400">{round(percentage * 100, 1)}%</div>
                       {formatter(item.clicks)}
                     </div>
                     <div className="w-24 text-right pr-1">{formatter(item.impressions)}</div>
@@ -89,9 +89,9 @@ function DataList({ dimension, label, renderName, expanded, close }: DataListPro
           ) : isLoading ? (
             <StandardSkeleton />
           ) : (
-            <div className="text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
-              <div className="text-neutral-500">
-                <div className="text-neutral-300 w-full text-center flex flex-row gap-2 items-center justify-center">
+            <div className="text-neutral-600 dark:text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
+              <div className="text-neutral-500 dark:text-neutral-500">
+                <div className="text-neutral-600 dark:text-neutral-300 w-full text-center flex flex-row gap-2 items-center justify-center">
                   <Info className="w-5 h-5" />
                   No Data
                 </div>
@@ -174,7 +174,7 @@ export function SearchConsole() {
                       <span className="truncate">{new URL(name).pathname || "/"}</span>
                       <a href={name} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
                         <SquareArrowOutUpRight
-                          className="ml-0.5 w-3.5 h-3.5 text-neutral-300 hover:text-neutral-100"
+                          className="ml-0.5 w-3.5 h-3.5 text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
                           strokeWidth={3}
                         />
                       </a>

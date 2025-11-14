@@ -13,14 +13,14 @@ Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b-neutral-700 bg-neutral-850", className)} {...props} />
+    <thead ref={ref} className={cn("[&_tr]:border-b-neutral-300 bg-neutral-100 dark:[&_tr]:border-b-neutral-700 dark:bg-neutral-850", className)} {...props} />
   )
 );
 TableHeader.displayName = "TableHeader";
 
 const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0 bg-neutral-900", className)} {...props} />
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0 bg-white dark:bg-neutral-900", className)} {...props} />
   )
 );
 TableBody.displayName = "TableBody";
@@ -41,7 +41,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b border-b-neutral-700 transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100 dark:hover:bg-neutral-800/50 dark:data-[state=selected]:bg-neutral-800",
+        "border-b border-b-neutral-300 transition-colors hover:bg-neutral-100/50 data-[state=selected]:bg-neutral-100 dark:border-b-neutral-700 dark:hover:bg-neutral-800/50 dark:data-[state=selected]:bg-neutral-800",
         className
       )}
       {...props}

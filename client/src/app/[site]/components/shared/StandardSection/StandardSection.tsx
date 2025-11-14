@@ -61,7 +61,7 @@ export function StandardSection({
         </div>
       )}
       <div className="flex flex-col gap-2 max-h-[344px] overflow-y-auto overflow-x-hidden">
-        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-400">
+        <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-600 dark:text-neutral-400">
           <div className="flex flex-row gap-1 items-center">
             {title}
             {IS_CLOUD && ["Countries", "Regions", "Cities"].includes(title) && (
@@ -104,7 +104,7 @@ export function StandardSection({
                   />
                 ))
             ) : (
-              <div className="text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
+              <div className="text-neutral-600 dark:text-neutral-300 w-full text-center mt-6 flex flex-row gap-2 items-center justify-center">
                 <Info className="w-5 h-5" />
                 No Data
               </div>

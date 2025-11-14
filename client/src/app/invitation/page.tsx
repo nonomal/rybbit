@@ -1,10 +1,10 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { ThreeDotLoader } from "../../components/Loaders";
+import { RybbitLogo } from "../../components/RybbitLogo";
 import { TopBar } from "../../components/TopBar";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { Button } from "../../components/ui/button";
@@ -22,7 +22,7 @@ function AuthComponent() {
   return (
     <Card className="w-full max-w-md p-1">
       <CardHeader>
-        <Image src="/rybbit.svg" alt="Rybbit" width={32} height={32} />
+        <RybbitLogo width={32} height={32} />
         <CardTitle className="text-2xl flex justify-center">Join {organization}</CardTitle>
         <p className="text-center text-sm text-muted-foreground mt-2">You've been invited by {inviterEmail}</p>
       </CardHeader>
@@ -76,7 +76,7 @@ function AcceptInvitationInner() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <Image src="/rybbit.svg" alt="Rybbit" width={32} height={32} />
+        <RybbitLogo width={32} height={32} />
         <CardTitle className="text-2xl flex justify-center">Invitation</CardTitle>
       </CardHeader>
       <CardContent>

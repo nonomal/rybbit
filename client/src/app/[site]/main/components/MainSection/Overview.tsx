@@ -97,8 +97,8 @@ const Stat = ({
   return (
     <div
       className={cn(
-        "flex flex-col cursor-pointer border-r border-neutral-800 last:border-r-0 text-nowrap",
-        selectedStat === id && "bg-neutral-850"
+        "flex flex-col cursor-pointer border-r border-neutral-300 dark:border-neutral-800 last:border-r-0 text-nowrap",
+        selectedStat === id && "bg-neutral-150 dark:bg-neutral-850"
       )}
       onClick={() => setSelectedStat(id)}
       onMouseEnter={() => setIsHovering(true)}

@@ -81,7 +81,7 @@ export function MainSection() {
                 rybbit.com
               </Link>
             </div>
-            <span className="text-sm text-neutral-200">{SELECTED_STAT_MAP[selectedStat]}</span>
+            <span className="text-sm text-neutral-700 dark:text-neutral-200">{SELECTED_STAT_MAP[selectedStat]}</span>
             <BucketSelection />
           </div>
           <div className="h-[200px] md:h-[290px] relative">

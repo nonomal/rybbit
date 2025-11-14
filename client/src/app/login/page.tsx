@@ -1,20 +1,20 @@
 "use client";
 
+import { AuthButton } from "@/components/auth/AuthButton";
+import { AuthError } from "@/components/auth/AuthError";
+import { AuthInput } from "@/components/auth/AuthInput";
+import { SocialButtons } from "@/components/auth/SocialButtons";
+import { Turnstile } from "@/components/auth/Turnstile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RybbitLogo } from "../../components/RybbitLogo";
 import { useSetPageTitle } from "../../hooks/useSetPageTitle";
 import { authClient } from "../../lib/auth";
-import { userStore } from "../../lib/userStore";
 import { useConfigs } from "../../lib/configs";
 import { IS_CLOUD } from "../../lib/const";
-import { AuthInput } from "@/components/auth/AuthInput";
-import { AuthButton } from "@/components/auth/AuthButton";
-import { AuthError } from "@/components/auth/AuthError";
-import { SocialButtons } from "@/components/auth/SocialButtons";
-import { Turnstile } from "@/components/auth/Turnstile";
+import { userStore } from "../../lib/userStore";
 
 export default function Page() {
   const { configs, isLoading: isLoadingConfigs } = useConfigs();
@@ -76,7 +76,7 @@ export default function Page() {
       <div></div>
       <Card className="w-full max-w-sm p-1">
         <CardHeader>
-          <Image src="/rybbit.svg" alt="Rybbit" width={32} height={32} />
+          <RybbitLogo width={32} height={32} />
           <CardTitle className="text-2xl flex justify-center">Sign in</CardTitle>
         </CardHeader>
         <CardContent>
