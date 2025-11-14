@@ -171,7 +171,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           theme={{
             enabled: true,
             enableSystem: true,
-            defaultTheme: "dark",
           }}
         >
           {children}

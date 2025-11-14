@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body className={cn("bg-background text-foreground h-full", inter.className)} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={true}>
+        <ThemeProvider attribute="class" enableSystem={true}>
           <TooltipProvider>
             <QueryProvider>
               <OrganizationInitializer />
