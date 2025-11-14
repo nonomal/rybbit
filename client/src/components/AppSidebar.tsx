@@ -9,6 +9,7 @@ import { useAdminPermission } from "../app/admin/hooks/useAdminPermission";
 import { cn } from "../lib/utils";
 import { useEmbedablePage } from "../app/[site]/utils";
 import { IS_CLOUD } from "../lib/const";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 function AppSidebarContent() {
   const pathname = usePathname();
@@ -55,13 +56,18 @@ function AppSidebarContent() {
           />
         )}
       </div>
-      <SidebarLink
-        href="/settings/account"
-        icon={<User className="w-5 h-5" />}
-        label="Account"
-        active={pathname.startsWith("/settings/account")}
-        expanded={isExpanded}
-      />
+      <div className="flex flex-col items-start gap-2 w-full">
+        <div className={cn("flex items-center w-full px-0.5", isExpanded ? "justify-start" : "hidden")}>
+          <ThemeSwitcher />
+        </div>
+        <SidebarLink
+          href="/settings/account"
+          icon={<User className="w-5 h-5" />}
+          label="Account"
+          active={pathname.startsWith("/settings/account")}
+          expanded={isExpanded}
+        />
+      </div>
     </div>
   );
 }
