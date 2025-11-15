@@ -20,6 +20,8 @@ export function SocialButtons({ onError, callbackURL, mode = "signin", className
       await authClient.signIn.social({
         provider,
         ...(callbackURL ? { callbackURL } : {}),
+        // For signup flow, new users should be redirected to the same callbackURL
+        ...(mode === "signup" && callbackURL ? { newUserCallbackURL: callbackURL } : {}),
       });
     } catch (error) {
       onError(String(error));
