@@ -6,18 +6,6 @@ export const metadata: Metadata = {
   title: "Free Bounce Rate Calculator | Website Bounce Rate Analysis Tool",
   description:
     "Calculate your website's bounce rate and compare it to industry benchmarks. Understand bounce rate metrics, see what's healthy for your industry, and learn how to improve visitor engagement.",
-  keywords: [
-    "bounce rate calculator",
-    "website bounce rate",
-    "bounce rate analysis",
-    "bounce rate tool",
-    "industry benchmarks",
-    "visitor engagement",
-    "analytics calculator",
-    "SEO metrics",
-    "website performance",
-    "user experience metrics",
-  ],
   openGraph: {
     title: "Free Bounce Rate Calculator | Website Bounce Rate Analysis Tool",
     description:

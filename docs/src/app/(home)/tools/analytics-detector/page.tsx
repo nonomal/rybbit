@@ -7,18 +7,6 @@ export const metadata: Metadata = {
   title: "Free Analytics Detector | Website Analytics & Tracking Tool Finder",
   description:
     "Discover what analytics and tracking tools any website is using. Analyze privacy implications, understand data collection practices, and learn about privacy-focused alternatives.",
-  keywords: [
-    "analytics detector",
-    "website analytics tools",
-    "tracking detection",
-    "privacy scanner",
-    "analytics finder",
-    "GDPR compliance",
-    "privacy-first analytics",
-    "website tracking",
-    "data collection",
-    "analytics platforms",
-  ],
   openGraph: {
     title: "Free Analytics Detector | Website Analytics & Tracking Tool Finder",
     description:
@@ -110,14 +98,11 @@ const educationalContent = (
     <section>
       <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">What Analytics Tools Exist?</h2>
       <p className="text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
-        Modern websites use various analytics platforms to understand user behavior, measure performance, and
-        optimize their content. These tools range from traditional universal analytics solutions that track
-        individual users across the web to privacy-focused alternatives that aggregate data without identifying
-        users.
+        Modern websites use various analytics platforms to understand user behavior, measure performance, and optimize
+        their content. These tools range from traditional universal analytics solutions that track individual users
+        across the web to privacy-focused alternatives that aggregate data without identifying users.
       </p>
-      <p className="text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
-        Common analytics platforms include:
-      </p>
+      <p className="text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">Common analytics platforms include:</p>
       <ul className="list-disc list-inside space-y-2 text-neutral-700 dark:text-neutral-300 ml-4">
         <li>
           <strong>Google Analytics</strong> - The most widely used analytics platform with comprehensive tracking
@@ -126,8 +111,7 @@ const educationalContent = (
           <strong>Facebook Pixel</strong> - Tracks user behavior for ad targeting and conversion measurement
         </li>
         <li>
-          <strong>Tag Managers</strong> - Google Tag Manager, Tealium, and others that deploy multiple tracking
-          codes
+          <strong>Tag Managers</strong> - Google Tag Manager, Tealium, and others that deploy multiple tracking codes
         </li>
         <li>
           <strong>Privacy-focused alternatives</strong> - Rybbit, Plausible, Fathom Analytics that prioritize user
@@ -148,16 +132,15 @@ const educationalContent = (
       </p>
       <ul className="list-disc list-inside space-y-2 text-neutral-700 dark:text-neutral-300 ml-4">
         <li>
-          <strong>Track users across the web</strong> - Using cookies and identifiers to follow users across
-          multiple websites
+          <strong>Track users across the web</strong> - Using cookies and identifiers to follow users across multiple
+          websites
         </li>
         <li>
-          <strong>Collect personally identifiable information</strong> - Building detailed profiles about
-          individual users
+          <strong>Collect personally identifiable information</strong> - Building detailed profiles about individual
+          users
         </li>
         <li>
-          <strong>Share data with third parties</strong> - Selling or sharing user data with advertisers and
-          brokers
+          <strong>Share data with third parties</strong> - Selling or sharing user data with advertisers and brokers
         </li>
         <li>
           <strong>Require consent</strong> - Mandating cookie banners due to GDPR and privacy regulations
@@ -183,8 +166,7 @@ const educationalContent = (
           <strong>Script analysis</strong> - Examines JavaScript files and tags loaded on the page
         </li>
         <li>
-          <strong>Pattern recognition</strong> - Identifies common URLs and code patterns used by analytics
-          platforms
+          <strong>Pattern recognition</strong> - Identifies common URLs and code patterns used by analytics platforms
         </li>
         <li>
           <strong>Identifier detection</strong> - Looks for tracking IDs and configuration parameters
@@ -193,13 +175,13 @@ const educationalContent = (
           <strong>HTTP header inspection</strong> - Analyzes server responses for tracking pixels and redirects
         </li>
         <li>
-          <strong>AI classification</strong> - Uses machine learning to categorize detected tools and assess
-          privacy impact
+          <strong>AI classification</strong> - Uses machine learning to categorize detected tools and assess privacy
+          impact
         </li>
       </ul>
       <p className="text-neutral-700 dark:text-neutral-300 mt-4 leading-relaxed">
-        The detection happens client-side without storing data about the websites you analyze, ensuring your own
-        privacy while using this tool.
+        The detection happens client-side without storing data about the websites you analyze, ensuring your own privacy
+        while using this tool.
       </p>
     </section>
 
@@ -234,8 +216,8 @@ const educationalContent = (
         </li>
       </ul>
       <p className="text-neutral-700 dark:text-neutral-300 mt-4 leading-relaxed">
-        Privacy-first analytics solutions have gained significant traction because they eliminate the
-        privacy-compliance trade-off: you get excellent insights without the tracking overhead.
+        Privacy-first analytics solutions have gained significant traction because they eliminate the privacy-compliance
+        trade-off: you get excellent insights without the tracking overhead.
       </p>
     </section>
   </>
@@ -251,11 +233,10 @@ const faqs = [
     question: "What do the privacy scores mean?",
     answer: (
       <>
-        Privacy scores indicate tracking intensity: <strong>Low</strong> (minimal tracking, privacy-focused tools
-        that use anonymous data), <strong>Medium</strong> (moderate tracking, some cookies and user-level
-        analytics), <strong>High</strong> (extensive tracking, multiple third-party services and cross-site
-        tracking). This helps you understand data collection practices and the privacy implications of each
-        analytics tool detected.
+        Privacy scores indicate tracking intensity: <strong>Low</strong> (minimal tracking, privacy-focused tools that
+        use anonymous data), <strong>Medium</strong> (moderate tracking, some cookies and user-level analytics),{" "}
+        <strong>High</strong> (extensive tracking, multiple third-party services and cross-site tracking). This helps
+        you understand data collection practices and the privacy implications of each analytics tool detected.
       </>
     ),
   },

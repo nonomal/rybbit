@@ -7,18 +7,6 @@ export const metadata: Metadata = {
   title: "Free Funnel Visualizer | Marketing Funnel Analysis & Conversion Funnel Tool",
   description:
     "Visualize your conversion funnel step-by-step. Input visitor counts at each stage to identify where you're losing customers. Analyze drop-off rates and optimize your funnel for better conversions.",
-  keywords: [
-    "funnel visualizer",
-    "conversion funnel",
-    "funnel analysis",
-    "conversion rate optimization",
-    "sales funnel",
-    "funnel metrics",
-    "drop-off analysis",
-    "customer journey",
-    "conversion tracking",
-    "funnel optimization",
-  ],
   openGraph: {
     title: "Free Funnel Visualizer | Marketing Funnel Analysis & Conversion Funnel Tool",
     description:

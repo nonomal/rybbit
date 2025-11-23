@@ -6,16 +6,6 @@ export const metadata: Metadata = {
   title: "Free Page Speed Calculator | Website Load Time Impact Calculator",
   description:
     "Calculate how page load time affects your conversions and revenue. See the real cost of a slow website. Use our free page speed impact calculator to understand performance metrics.",
-  keywords: [
-    "page speed calculator",
-    "website speed test",
-    "page load time",
-    "conversion rate",
-    "Core Web Vitals",
-    "page speed optimization",
-    "website performance",
-    "load time impact",
-  ],
   openGraph: {
     title: "Free Page Speed Calculator | Website Load Time Impact Calculator",
     description:

@@ -6,20 +6,6 @@ export const metadata: Metadata = {
   title: "Free Traffic Value Calculator | Website Traffic ROI & Value Calculator",
   description:
     "Calculate the monetary value of your website traffic. Understand what each visitor is worth to your business. Get insights into conversion rates, revenue per visitor, and optimize your marketing budget allocation.",
-  keywords: [
-    "traffic value calculator",
-    "visitor value calculator",
-    "website traffic value",
-    "traffic ROI calculator",
-    "visitor monetization",
-    "conversion value",
-    "traffic metrics",
-    "website analytics",
-    "marketing ROI",
-    "customer acquisition cost",
-    "visitor worth",
-    "traffic analysis tool",
-  ],
   openGraph: {
     title: "Free Traffic Value Calculator | Website Traffic ROI & Value Calculator",
     description:

@@ -6,19 +6,6 @@ export const metadata: Metadata = {
   title: "Free UTM Builder | Campaign URL Parameter Generator for Marketing Tracking",
   description:
     "Create trackable UTM campaign URLs instantly. Build utm_source, utm_medium, utm_campaign parameters for Google Analytics and marketing campaign tracking.",
-  keywords: [
-    "UTM builder",
-    "UTM parameters",
-    "campaign URL generator",
-    "Google Analytics tracking",
-    "UTM source",
-    "UTM medium",
-    "UTM campaign",
-    "marketing tracking",
-    "URL builder",
-    "campaign tracking",
-    "analytics parameters",
-  ],
   openGraph: {
     title: "Free UTM Builder | Campaign URL Parameter Generator",
     description:

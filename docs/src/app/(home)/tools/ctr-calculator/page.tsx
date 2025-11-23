@@ -7,18 +7,6 @@ export const metadata: Metadata = {
   title: "Free CTR Calculator | Click-Through Rate Calculator for Marketing",
   description:
     "Calculate your click-through rate (CTR) and compare it to industry benchmarks. Free CTR calculator for email, PPC, organic search, and social media campaigns. Learn CTR formulas, industry standards, and how to improve your CTR.",
-  keywords: [
-    "CTR calculator",
-    "click-through rate calculator",
-    "ctr formula",
-    "click through rate",
-    "marketing metrics",
-    "industry benchmarks",
-    "CTR improvement",
-    "ad performance",
-    "conversion metrics",
-    "marketing analytics",
-  ],
   openGraph: {
     title: "Free CTR Calculator | Click-Through Rate Calculator for Marketing",
     description:

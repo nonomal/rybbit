@@ -7,16 +7,6 @@ export const metadata: Metadata = {
   title: "Free Marketing ROI Calculator | Calculate Return on Investment & ROAS",
   description:
     "Calculate your marketing ROI, ROAS, profit margins, and net profit. Get instant insights into your campaign performance and make data-driven decisions.",
-  keywords: [
-    "ROI calculator",
-    "marketing ROI",
-    "ROAS calculator",
-    "return on ad spend",
-    "marketing ROI formula",
-    "campaign ROI",
-    "advertising ROI",
-    "marketing metrics",
-  ],
   openGraph: {
     title: "Free Marketing ROI Calculator | Calculate Return on Investment & ROAS",
     description: "Calculate your marketing ROI, ROAS, profit margins, and net profit instantly.",

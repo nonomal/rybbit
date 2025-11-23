@@ -87,7 +87,6 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Free Your Tool Name | Description for SEO",
   description: "Your tool description that will appear in search results and social media previews.",
-  keywords: ["keyword1", "keyword2", "keyword3"],
   openGraph: {
     title: "Free Your Tool Name | Short Description",
     description: "Social media description for your tool.",

@@ -7,16 +7,6 @@ export const metadata: Metadata = {
   title: "Free SEO Title Generator | AI-Powered Title Tag Creator for Better Rankings",
   description:
     "Generate optimized SEO title tags in seconds with our free AI-powered tool. Get multiple title variations, character count validation, and SEO best practices. Perfect for improving click-through rates and search rankings.",
-  keywords: [
-    "seo title generator",
-    "title tag generator",
-    "meta title creator",
-    "seo headline tool",
-    "page title optimizer",
-    "title tag creator",
-    "search engine title generator",
-    "ai title generator",
-  ],
   openGraph: {
     title: "Free SEO Title Generator | Create Optimized Title Tags",
     description:
@@ -109,17 +99,15 @@ const educationalContent = (
     <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">Why SEO Title Tags Matter</h2>
     <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4">
       Your title tag is one of the most important on-page SEO elements. It appears in search engine results pages
-      (SERPs) as the clickable headline and tells both search engines and users what your page is about. A
-      well-crafted title tag can significantly improve your click-through rate (CTR) and search rankings.
+      (SERPs) as the clickable headline and tells both search engines and users what your page is about. A well-crafted
+      title tag can significantly improve your click-through rate (CTR) and search rankings.
     </p>
 
-    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 mt-8">
-      Best Practices for SEO Titles
-    </h3>
+    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 mt-8">Best Practices for SEO Titles</h3>
     <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
       <li>
-        <strong>Keep it 50-60 characters:</strong> Search engines typically display the first 50-60 characters.
-        Anything longer gets truncated with an ellipsis.
+        <strong>Keep it 50-60 characters:</strong> Search engines typically display the first 50-60 characters. Anything
+        longer gets truncated with an ellipsis.
       </li>
       <li>
         <strong>Include your primary keyword:</strong> Place your main keyword near the beginning of the title for
@@ -134,8 +122,8 @@ const educationalContent = (
         content.
       </li>
       <li>
-        <strong>Match search intent:</strong> Align your title with what users are actually searching for and
-        expecting to find.
+        <strong>Match search intent:</strong> Align your title with what users are actually searching for and expecting
+        to find.
       </li>
       <li>
         <strong>Include modifiers:</strong> Words like "best," "guide," "2024," or "free" can help you rank for
@@ -164,8 +152,8 @@ const educationalContent = (
         visibility.
       </li>
       <li>
-        <strong>Writing for bots, not humans:</strong> While keywords matter, your title should still read naturally
-        and appeal to real people.
+        <strong>Writing for bots, not humans:</strong> While keywords matter, your title should still read naturally and
+        appeal to real people.
       </li>
     </ul>
 
@@ -212,8 +200,8 @@ const faqs = [
         <Link href="https://app.rybbit.io" className="text-emerald-600 dark:text-emerald-400 hover:underline">
           Rybbit
         </Link>{" "}
-        can show you which pages get the most organic traffic, helping you identify successful titles and
-        opportunities for improvement.
+        can show you which pages get the most organic traffic, helping you identify successful titles and opportunities
+        for improvement.
       </>
     ),
   },
