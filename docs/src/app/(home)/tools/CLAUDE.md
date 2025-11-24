@@ -73,9 +73,9 @@ Path: `/docs/src/app/api/tools/your-tool-name/route.ts`
 
 # Multi-Platform Tools (Same Tool, Multiple Platforms)
 
-For tools that are identical across platforms but with different branding (e.g., font generators for LinkedIn, Discord, X, etc.), use this pattern to avoid duplication.
+For tools that are identical across platforms but with different branding (e.g., font generators for LinkedIn, Discord, X, etc.), use the **dynamic route pattern** to minimize duplication.
 
-## Structure
+## Recommended Structure (Dynamic Route)
 
 ```
 /docs/src/app/(home)/tools/
@@ -83,23 +83,20 @@ For tools that are identical across platforms but with different branding (e.g.,
     YourToolComponent.tsx      # Shared tool logic
     platform-configs.ts        # Platform metadata
   (your-tool-group)/           # Route group (parentheses = hidden from URL)
-    platform1-tool-name/
-      page.tsx
-    platform2-tool-name/
-      page.tsx
+    [slug]/                    # Dynamic route
+      page.tsx                 # Single page for all platforms
 ```
 
-**Example:** Font generators
+**Example:** Font generators (19 platforms, 1 file)
 
 ```
 /tools/
   components/
     FontGeneratorTool.tsx      # Shared font transformation logic
-    platform-configs.ts        # All platform metadata
-  (font-generators)/           # Route group (organized but not in URL)
-    linkedin-font-generator/page.tsx
-    discord-font-generator/page.tsx
-    x-font-generator/page.tsx
+    platform-configs.ts        # All 19 platform configs
+  (font-generators)/           # Route group
+    [slug]/
+      page.tsx                 # Generates all 19 routes at build time
 ```
 
 ## Step-by-Step
@@ -154,36 +151,74 @@ export const platformConfigs: Record<string, PlatformConfig> = {
 export const platformList = Object.values(platformConfigs);
 ```
 
-### 3. Create Template Page
+### 3. Create Dynamic Route Page
 
-Create **one** page as a template in the route group:
+Create a **single** dynamic route that handles all platforms:
 
 ```tsx
-// (your-tool-group)/platform1-tool-name/page.tsx
+// (your-tool-group)/[slug]/page.tsx
 import { ToolPageLayout } from "../../components/ToolPageLayout";
 import { YourTool } from "../../components/YourToolComponent";
-import { platformConfigs } from "../../components/platform-configs";
+import { platformConfigs, platformList } from "../../components/platform-configs";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-const platform = platformConfigs.platform1;
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
-export const metadata: Metadata = {
-  title: `Free ${platform.displayName} | Description`,
-  description: platform.description,
-  // ... rest of metadata
-};
+// Generate static params for all platforms at build time
+export async function generateStaticParams() {
+  return platformList.map(platform => ({
+    slug: `${platform.id}-tool-name`,
+  }));
+}
 
-const educationalContent = (
-  <>
-    <h2>About {platform.name}</h2>
-    <p>{platform.educationalContent}</p>
-  </>
-);
+// Generate metadata dynamically based on slug
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const platformId = slug.replace("-tool-name", "");
+  const platform = platformConfigs[platformId];
 
-export default function PlatformToolPage() {
+  if (!platform) {
+    return { title: "Tool Not Found" };
+  }
+
+  return {
+    title: `Free ${platform.displayName} | Description`,
+    description: platform.description,
+    openGraph: {
+      title: `Free ${platform.displayName}`,
+      description: platform.description,
+      type: "website",
+      url: `https://yourdomain.com/tools/${slug}`,
+    },
+    // ... rest of metadata
+  };
+}
+
+// Render the page
+export default async function PlatformToolPage({ params }: PageProps) {
+  const { slug } = await params;
+  const platformId = slug.replace("-tool-name", "");
+  const platform = platformConfigs[platformId];
+
+  if (!platform) {
+    notFound();
+  }
+
+  const educationalContent = (
+    <>
+      <h2 className="text-2xl font-bold mb-4">About {platform.name}</h2>
+      <p className="text-neutral-700 dark:text-neutral-300">
+        {platform.educationalContent}
+      </p>
+    </>
+  );
+
   return (
     <ToolPageLayout
-      toolSlug={`${platform.id}-tool-name`}
+      toolSlug={slug}
       title={platform.displayName}
       description={platform.description}
       toolComponent={<YourTool platformName={platform.name} />}
@@ -198,25 +233,7 @@ export default function PlatformToolPage() {
 }
 ```
 
-### 4. Duplicate for All Platforms
-
-Use bash to create copies for other platforms:
-
-```bash
-cd /docs/src/app/(home)/tools/(your-tool-group)
-
-# Create directories and copy template
-for platform in platform2 platform3 platform4; do
-  mkdir -p "${platform}-tool-name"
-  cp platform1-tool-name/page.tsx "${platform}-tool-name/page.tsx"
-
-  # Replace platform ID in the file
-  sed -i '' "s/platformConfigs.platform1/platformConfigs.${platform}/g" \
-    "${platform}-tool-name/page.tsx"
-done
-```
-
-### 5. Register Tools
+### 4. Register Tools
 
 **Main tools page:**
 
@@ -228,7 +245,7 @@ const yourTools = platformList.map(platform => ({
   href: `/tools/${platform.id}-tool-name`,
   icon: YourIcon,
   title: platform.displayName,
-  description: `${platform.description}`,
+  description: platform.description,
 }));
 ```
 
@@ -238,34 +255,51 @@ const yourTools = platformList.map(platform => ({
 // src/components/RelatedTools.tsx
 const allTools: Tool[] = [
   // ... existing tools
-  {
-    name: "Platform1 Tool",
-    description: "Description",
-    href: "/tools/platform1-tool-name",
+  ...platformList.map(platform => ({
+    name: platform.displayName,
+    description: platform.description,
+    href: `/tools/${platform.id}-tool-name`,
     category: "your-category",
-  },
-  // Add all other platforms...
+  })),
 ];
 ```
 
+## Key Points
+
+**Dynamic Route Pattern:**
+- The `[slug]` directory creates a dynamic route where slug = full route name (e.g., "linkedin-tool-name")
+- `generateStaticParams()` tells Next.js to generate static pages for all platforms at build time
+- Parse the slug to extract the platform ID: `slug.replace("-tool-name", "")`
+- Next.js 15+ requires awaiting `params`: `const { slug } = await params`
+
+**Route Groups:**
+- `(your-tool-group)/` organizes files without affecting URLs
+- URLs remain `/tools/platform-tool-name` (route group doesn't appear)
+
+**Next.js Limitations:**
+- ❌ `[platform]-tool-name/` doesn't work (Next.js doesn't support `[param]-literal` patterns)
+- ✅ `[slug]/` where slug includes the suffix works perfectly
+
 ## Benefits
 
-- **1 shared component** instead of N duplicate components
-- **Platform-specific data** centralized in one config file
-- **Easy to add platforms:** Just add to config, create page, run duplication script
-- **Route group keeps `/tools/` clean** - all platform pages organized in `(your-tool-group)/`
-- **URLs unchanged:** Still `/tools/platform-tool-name` (route group doesn't appear in URL)
+- **90% less code:** 1 file instead of N duplicate files
+- **Single source of truth:** All logic in one place
+- **Same SEO:** Each platform gets unique URL, title, description, metadata
+- **Easy to add platforms:** Just add to config and rebuild
+- **Type-safe:** TypeScript ensures platform config consistency
+- **Route group keeps `/tools/` clean**
 
 ## When to Use This Pattern
 
-✅ **Use for:**
+✅ **Use dynamic route for:**
 
 - Same tool logic, different platform branding (font generators, link builders, etc.)
 - Tools with 5+ platform variants
 - Tools where platforms only differ in metadata/content
+- You want minimal code duplication
 
 ❌ **Don't use for:**
 
-- Tools with platform-specific logic
+- Tools with platform-specific logic that can't be shared
 - One-off tools
-- Tools with <3 platform variants (just duplicate the page)
+- Tools with <3 platform variants (just duplicate the page - simpler)
