@@ -1,9 +1,11 @@
 # Adding Tools to Rybbit Docs (AI Agent Guide)
 
 ## Structure
+
 All tools use `ToolPageLayout` with 6 sections: Header, Tool, Educational Content, FAQ, Related Tools, CTA.
 
 ## File Structure
+
 ```
 /docs/src/app/(home)/tools/your-tool-name/
   YourToolForm.tsx  # Client component with tool logic
@@ -11,21 +13,24 @@ All tools use `ToolPageLayout` with 6 sections: Header, Tool, Educational Conten
 ```
 
 ## Required ToolPageLayout Props
+
 - `toolSlug`: URL identifier matching directory name
 - `title`: Page title
 - `description`: Brief description
 - `toolComponent`: `<YourToolForm />`
 - `educationalContent`: JSX with h2 sections (What is X?, How to Use, Best Practices)
 - `faqs`: Array of `{question, answer}` (4-6 items, answer can be JSX)
-- `relatedToolsCategory`: `"analytics" | "seo" | "privacy"`
+- `relatedToolsCategory`: `"analytics" | "seo" | "privacy" | "social-media"`
 - `ctaTitle`, `ctaDescription`, `ctaEventLocation`: CTA section
 
 ## Optional Props
+
 - `badge`: `"Free Tool"` (default) or `"AI-Powered Tool"`
 - `ctaButtonText`: Default `"Start tracking for free"`
 - `structuredData`: JSON-LD object
 
 ## Styling
+
 - Primary: `bg-emerald-600 hover:bg-emerald-500`
 - Success: `bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800`
 - Error: `bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800`
@@ -34,6 +39,7 @@ All tools use `ToolPageLayout` with 6 sections: Header, Tool, Educational Conten
 - Text: `text-neutral-900 dark:text-white` (headings), `text-neutral-700 dark:text-neutral-300` (body)
 
 ## CRITICAL Rules
+
 1. **NO manual bullets** (`•`) in lists - component auto-styles them
 2. Tool slug MUST match directory name
 3. Educational content: h2 for sections, no h1
@@ -41,21 +47,26 @@ All tools use `ToolPageLayout` with 6 sections: Header, Tool, Educational Conten
 5. Include Rybbit integration in FAQs when relevant
 
 ## Common Patterns
+
 ```tsx
 // Loading
 const [isLoading, setIsLoading] = useState(false);
-<button disabled={isLoading}>{isLoading ? "Processing..." : "Calculate"}</button>
+<button disabled={isLoading}>{isLoading ? "Processing..." : "Calculate"}</button>;
 
 // Error
 const [error, setError] = useState<string | null>(null);
-{error && <div className="p-4 bg-red-50...">{error}</div>}
+{
+  error && <div className="p-4 bg-red-50...">{error}</div>;
+}
 
 // Copy
 await navigator.clipboard.writeText(result);
 ```
 
 ## API Routes (if needed)
+
 Path: `/docs/src/app/api/tools/your-tool-name/route.ts`
+
 - Use POST, validate with Zod, return JSON
 
 ---
@@ -79,6 +90,7 @@ For tools that are identical across platforms but with different branding (e.g.,
 ```
 
 **Example:** Font generators
+
 ```
 /tools/
   components/
@@ -207,6 +219,7 @@ done
 ### 5. Register Tools
 
 **Main tools page:**
+
 ```tsx
 // page.tsx
 import { platformList } from "./components/platform-configs";
@@ -220,6 +233,7 @@ const yourTools = platformList.map(platform => ({
 ```
 
 **Related tools:**
+
 ```tsx
 // src/components/RelatedTools.tsx
 const allTools: Tool[] = [
@@ -245,11 +259,13 @@ const allTools: Tool[] = [
 ## When to Use This Pattern
 
 ✅ **Use for:**
+
 - Same tool logic, different platform branding (font generators, link builders, etc.)
 - Tools with 5+ platform variants
 - Tools where platforms only differ in metadata/content
 
 ❌ **Don't use for:**
+
 - Tools with platform-specific logic
 - One-off tools
 - Tools with <3 platform variants (just duplicate the page)
