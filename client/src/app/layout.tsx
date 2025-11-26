@@ -14,12 +14,18 @@ import { TooltipProvider } from "../components/ui/tooltip";
 import { cn } from "../lib/utils";
 import "./globals.css";
 import { ReactScan } from "./ReactScan";
+import { OrganizationInitializer } from "../components/OrganizationInitializer";
+import { AuthenticationGuard } from "../components/AuthenticationGuard";
+import { ThemeProvider } from "next-themes";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { useTrack } from "../hooks/useTrack";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Use the hook to expose stopImpersonating globally
   useStopImpersonation();
+  useTrack();
 
   const appEnv = useAppEnv();
 
