@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterParameter } from "@rybbit/shared";
+import { Filter, FilterParameter } from "@rybbit/shared";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -28,6 +28,7 @@ export function StandardSection({
   close,
   hasSubrow,
   getSubrowLabel,
+  additionalFilters,
 }: {
   title: string;
   getKey: (item: MetricResponse) => string;
@@ -41,11 +42,13 @@ export function StandardSection({
   close: () => void;
   hasSubrow?: boolean;
   getSubrowLabel?: (item: MetricResponse) => ReactNode;
+  additionalFilters?: Filter[];
 }) {
   const { data, isLoading, isFetching, error, refetch } = usePaginatedMetric({
     parameter: filterParameter,
     limit: 100,
     page: 1,
+    additionalFilters,
   });
 
   const itemsForDisplay = data?.data;

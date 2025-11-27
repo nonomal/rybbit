@@ -1,12 +1,19 @@
 "use client";
 
 import { SessionsList } from "@/components/Sessions/SessionsList";
-import { ArrowLeft } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useUserInfo } from "../../../../api/analytics/userGetInfo";
 import { useGetSessions, useGetUserSessionCount } from "../../../../api/analytics/useGetUserSessions";
-import { Button } from "../../../../components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../../../components/ui/breadcrumb";
 import { useSetPageTitle } from "../../../../hooks/useSetPageTitle";
 import { useGetRegionName } from "../../../../lib/geo";
 import { MobileSidebar } from "../../components/Sidebar/MobileSidebar";
@@ -15,15 +22,14 @@ import { Skeleton } from "../../../../components/ui/skeleton";
 import { Avatar, generateName } from "../../../../components/Avatar";
 import { Badge } from "../../../../components/ui/badge";
 import { IdentifiedBadge } from "../../../../components/IdentifiedBadge";
+import { UserTopPages } from "./components/UserTopPages";
 
 const LIMIT = 25;
 
 export default function UserPage() {
   useSetPageTitle("Rybbit · User");
 
-  const router = useRouter();
-  const { userId } = useParams();
-  const { site } = useParams();
+  const { userId, site } = useParams();
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useUserInfo(Number(site), userId as string);
@@ -37,10 +43,6 @@ export default function UserPage() {
 
   const { getRegionName } = useGetRegionName();
 
-  const handleBackClick = () => {
-    router.push(`/${site}/users`);
-  };
-
   const traitsUsername = data?.traits?.username as string | undefined;
   const traitsName = data?.traits?.name as string | undefined;
   const traitsEmail = data?.traits?.email as string | undefined;
@@ -49,14 +51,23 @@ export default function UserPage() {
     traitsUsername || traitsName || (isIdentified ? (userId as string) : generateName(userId as string));
 
   return (
-    <div className="p-2 md:p-4 max-w-[1400px] mx-auto">
+    <div className="p-2 md:p-4 max-w-[1200px] mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-2">
         <MobileSidebar />
-        <Button onClick={handleBackClick} className="w-max" variant="ghost" size="sm">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Users
-        </Button>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/${site}/users`}>Users</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{isLoading ? "Loading..." : displayName}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       <div className="flex items-center gap-4 mb-4">
@@ -88,7 +99,7 @@ export default function UserPage() {
       </div>
 
       {/* Main two-column layout */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Sidebar */}
         <UserSidebar
           data={data}
@@ -98,7 +109,8 @@ export default function UserPage() {
         />
 
         {/* Right Content - Sessions */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 space-y-4">
+          <UserTopPages />
           <SessionsList
             sessions={sessions}
             isLoading={isLoadingSessions}
