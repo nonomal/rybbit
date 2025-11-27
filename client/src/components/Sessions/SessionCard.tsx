@@ -59,14 +59,16 @@ export function SessionCard({ session, onClick, userId, expandedByDefault }: Ses
     : generateName(session.user_id);
 
   return (
-    <div className="rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
+    <div className="rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-850 overflow-hidden">
       <div className="p-3 cursor-pointer" onClick={handleCardClick}>
         <div className="flex items-center gap-2">
-          <div className="hidden md:flex items-center gap-2">
-            <Avatar size={24} id={session.user_id} />
-            <span className="text-xs text-neutral-600 dark:text-neutral-200 w-24 truncate">{displayName}</span>
-            {isIdentified && <IdentifiedBadge traits={traits} />}
-          </div>
+          {!userId && (
+            <div className="hidden md:flex items-center gap-2">
+              <Avatar size={24} id={session.user_id} />
+              <span className="text-xs text-neutral-600 dark:text-neutral-200 w-24 truncate">{displayName}</span>
+              {isIdentified && <IdentifiedBadge traits={traits} />}
+            </div>
+          )}
 
           {/* Icons section */}
           <div className="flex space-x-2 items-center">

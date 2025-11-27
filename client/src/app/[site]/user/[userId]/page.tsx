@@ -1,7 +1,18 @@
 "use client";
 
 import { SessionsList } from "@/components/Sessions/SessionsList";
-import { ArrowLeft, Calendar, CalendarCheck, Clock, Files, Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  CalendarCheck,
+  Clock,
+  Files,
+  Globe,
+  Laptop,
+  Monitor,
+  Smartphone,
+  Tablet,
+} from "lucide-react";
 import { DateTime } from "luxon";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,6 +35,64 @@ import { VisitCalendar } from "./components/Calendar";
 import { EventIcon, PageviewIcon } from "../../../../components/EventIcons";
 
 const LIMIT = 25;
+
+// Reusable card wrapper for sidebar sections
+function SidebarCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={`bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-850 p-4 ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Info row component for consistent styling
+function InfoRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between py-1.5 border-b border-neutral-50 dark:border-neutral-800 last:border-0">
+      <span className="text-neutral-500 dark:text-neutral-400 text-xs flex items-center gap-1.5">
+        {icon}
+        {label}
+      </span>
+      <span className="text-neutral-700 dark:text-neutral-200 text-sm">{value}</span>
+    </div>
+  );
+}
+
+// Stat card component
+function StatCard({
+  icon,
+  label,
+  value,
+  isLoading,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-1">
+        <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
+          <Skeleton className="w-3 h-3" />
+          <Skeleton className="h-3 w-12" />
+        </div>
+        <Skeleton className="h-5 w-14" />
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="text-[10px] text-neutral-500 dark:text-neutral-400 flex items-center gap-1 uppercase tracking-wide">
+        {icon}
+        {label}
+      </div>
+      <div className="text-sm">{value}</div>
+    </div>
+  );
+}
 
 export default function UserPage() {
   useSetPageTitle("Rybbit · User");
@@ -50,7 +119,6 @@ export default function UserPage() {
   };
 
   // Get display name from traits if available, otherwise generate from ID
-  // Priority: username > name > userId (for identified) or generated name (for anonymous)
   const traitsUsername = data?.traits?.username as string | undefined;
   const traitsName = data?.traits?.name as string | undefined;
   const traitsEmail = data?.traits?.email as string | undefined;
@@ -58,249 +126,242 @@ export default function UserPage() {
   const displayName =
     traitsUsername || traitsName || (isIdentified ? (userId as string) : generateName(userId as string));
 
+  // Filter custom traits (exclude username, name, email)
+  const customTraits = data?.traits
+    ? Object.entries(data.traits).filter(([key]) => !["username", "name", "email"].includes(key))
+    : [];
+
   return (
-    <div className="p-2 md:p-4 max-w-[1300px] mx-auto space-y-3">
-      <MobileSidebar />
-      <Button onClick={handleBackClick} className="w-max" variant="ghost">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Users
-      </Button>
-      <div className="mb-4">
-        <h1 className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar size={48} id={userId as string} />
-            <div>
-              <div className="text-lg font-bold flex items-center gap-2">
-                {displayName}
-                {isIdentified && <IdentifiedBadge traits={data?.traits} />}
-              </div>
-              <div className="flex flex-col gap-0.5">
-                {traitsEmail && <span className="text-neutral-600 dark:text-neutral-300 text-sm">{traitsEmail}</span>}
-                <span className="text-neutral-500 dark:text-neutral-400 text-xs">ID: {userId}</span>
-              </div>
-            </div>
-          </div>
-          {data?.ip && (
-            <Badge variant="outline" className="flex gap-1 text-neutral-600 dark:text-neutral-300">
-              IP: <span className="text-neutral-900 dark:text-neutral-100">{data?.ip}</span>
-            </Badge>
-          )}
-        </h1>
-        <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-750 text-sm mb-3">
-          {isLoading ? (
-            // Skeleton loading state for user info
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="grid grid-cols-[100px_auto] gap-2">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <>
-                    <Skeleton key={`label-${index}`} className="h-4 w-16" />
-                    <Skeleton key={`value-${index}`} className="h-4 w-24" />
-                  </>
-                ))}
-              </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <>
-                    <Skeleton key={`label2-${index}`} className="h-4 w-20" />
-                    <Skeleton key={`value2-${index}`} className="h-4 w-32" />
-                  </>
-                ))}
-              </div>
-            </div>
-          ) : (
-            // Actual user info data
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="grid grid-cols-[100px_auto] gap-2">
-                {/* <span className=" text-neutral-100">User ID:</span>
-                <CopyText
-                  text={userId as string}
-                  maxLength={24}
-                  className="inline-flex text-neutral-300"
-                /> */}
-                <span className="text-neutral-900 dark:text-neutral-100">Country:</span>
-                <div className="text-neutral-600 dark:text-neutral-300 flex gap-1 items-center">
-                  <CountryFlag country={data?.country || ""} />
-                  {data?.country ? getCountryName(data.country) : "N/A"}
-                </div>
-                <span className=" text-neutral-900 dark:text-neutral-100">Region:</span>
-                <div className="text-neutral-600 dark:text-neutral-300">
-                  {data?.region ? getRegionName(data.region) : "N/A"}
-                </div>
-                <span className=" text-neutral-900 dark:text-neutral-100">City:</span>
-                <div className="text-neutral-600 dark:text-neutral-300">{data?.city ?? "N/A"}</div>
-                <span className=" text-neutral-900 dark:text-neutral-100">Language:</span>
-                <div className="text-neutral-600 dark:text-neutral-300">
-                  {data?.language ? getLanguageName(data.language) : "N/A"}
-                </div>
-              </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <span className=" text-neutral-900 dark:text-neutral-100">Device Type:</span>
-                <div className="text-neutral-600 dark:text-neutral-300 flex gap-1 items-center">
-                  {data?.device_type === "Desktop" && <Monitor className="w-4 h-4" />}
-                  {data?.device_type === "Mobile" && <Smartphone className="w-4 h-4" />}
-                  {data?.device_type === "Tablet" && <Tablet className="w-4 h-4" />}
-                  {data?.device_type}
-                </div>
-                <span className=" text-neutral-900 dark:text-neutral-100">Browser:</span>
-                <div className="flex gap-1 text-neutral-600 dark:text-neutral-300 items-center">
-                  <Browser browser={data?.browser || "Unknown"} />
-                  {data?.browser}
-                  {data?.browser_version && <span className="ml-1">v{data?.browser_version}</span>}
-                </div>
-                <span className="text-neutral-900 dark:text-neutral-100">OS:</span>
-                <div className="flex gap-1 text-neutral-600 dark:text-neutral-300 items-center">
-                  <OperatingSystem os={data?.operating_system || ""} />
-                  {data?.operating_system}
-                  {data?.operating_system_version && <span className="ml-1">v{data?.operating_system_version}</span>}
-                </div>
-                <span className="text-neutral-900 dark:text-neutral-100">Screen:</span>
-                <div className="flex gap-1 text-neutral-600 dark:text-neutral-300">
-                  {data?.screen_width} x {data?.screen_height}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 justify-between">
-          {isLoading ? (
-            // Skeleton loading state
-            <>
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-750 flex-grow"
-                >
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                    <Skeleton className="w-4 h-4" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
-                  <Skeleton className="h-5 w-16" />
-                </div>
-              ))}
-            </>
-          ) : (
-            // Actual data
-            <>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-750 flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  Avg. Session Duration
-                </div>
-                <div className="font-semibold">{data?.duration ? formatDuration(data.duration) : "N/A"}</div>
-              </div>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-800  flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <Files className="w-4 h-4" />
-                  Sessions
-                </div>
-                <div className="font-semibold">{data?.sessions}</div>
-              </div>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-800  flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <PageviewIcon />
-                  Pageviews
-                </div>
-                <div className="font-semibold">{data?.pageviews}</div>
-              </div>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-800  flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <EventIcon />
-                  Events
-                </div>
-                <div className="font-semibold">{data?.events}</div>
-              </div>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-800  flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  First Seen
-                </div>
-                <div className="font-semibold">
-                  {DateTime.fromSQL(data?.first_seen ?? "", { zone: "utc" })
-                    .toLocal()
-                    .toLocaleString(DateTime.DATETIME_SHORT)}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg flex flex-col gap-1 border border-neutral-100 dark:border-neutral-800  flex-grow">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                  <CalendarCheck className="w-4 h-4" />
-                  Last Seen
-                </div>
-                <div className="font-semibold">
-                  {DateTime.fromSQL(data?.last_seen ?? "", { zone: "utc" })
-                    .toLocal()
-                    .toLocaleString(DateTime.DATETIME_SHORT)}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+    <div className="p-2 md:p-4 max-w-[1400px] mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <MobileSidebar />
+        <Button onClick={handleBackClick} className="w-max" variant="ghost" size="sm">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Users
+        </Button>
+      </div>
 
-        {/* Traits and Linked Devices sections for identified users */}
-        {isIdentified && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-            {/* Custom Traits */}
-            {data?.traits &&
-              Object.keys(data.traits).filter(k => k !== "username" && k !== "name" && k !== "email").length > 0 && (
-                <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg border border-neutral-100 dark:border-neutral-750">
-                  <h3 className="text-sm font-semibold mb-2 text-neutral-700 dark:text-neutral-200">User Traits</h3>
-                  <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-                    {Object.entries(data.traits)
-                      .filter(([key]) => key !== "username" && key !== "name" && key !== "email")
-                      .map(([key, value]) => (
-                        <>
-                          <span key={`key-${key}`} className="text-neutral-500 dark:text-neutral-400 capitalize">
-                            {key.replace(/_/g, " ")}:
-                          </span>
-                          <span key={`value-${key}`} className="text-neutral-700 dark:text-neutral-200 truncate">
-                            {String(value)}
-                          </span>
-                        </>
-                      ))}
-                  </div>
+      {/* Main two-column layout */}
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Left Sidebar */}
+        <div className="w-full md:w-[300px] md:shrink-0 space-y-3">
+          {/* User Profile Header */}
+          <div className="flex flex-col">
+            <Avatar size={64} id={userId as string} />
+            <div className="mt-3 w-full">
+              <div className="font-semibold text-lg flex items-center gap-2">
+                {isLoading ? <Skeleton className="h-6 w-32" /> : displayName}
+                {!isLoading && isIdentified && <IdentifiedBadge traits={data?.traits} />}
+              </div>
+              {isLoading ? (
+                <div className="flex flex-col items-center gap-1 mt-1">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-3 w-24" />
                 </div>
+              ) : (
+                <>
+                  {traitsEmail && (
+                    <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-0.5">{traitsEmail}</p>
+                  )}
+                  <p className="text-neutral-400 dark:text-neutral-500 text-xs font-mono mt-1 truncate">{userId}</p>
+                </>
               )}
-
-            {/* Linked Devices */}
-            {data?.linked_devices && data.linked_devices.length > 0 && (
-              <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg border border-neutral-100 dark:border-neutral-750">
-                <h3 className="text-sm font-semibold mb-2 text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
-                  <Laptop className="w-4 h-4" />
-                  Linked Devices ({data.linked_devices.length})
-                </h3>
-                <div className="space-y-2 text-sm max-h-32 overflow-y-auto">
-                  {data.linked_devices.map((device, index) => (
-                    <div
-                      key={device.anonymous_id}
-                      className="flex items-center justify-between py-1 border-b border-neutral-100 dark:border-neutral-800 last:border-0"
-                    >
-                      <span className="text-neutral-600 dark:text-neutral-300 font-mono text-xs truncate max-w-[200px]">
-                        {device.anonymous_id}
-                      </span>
-                      <span className="text-neutral-400 dark:text-neutral-500 text-xs">
-                        {DateTime.fromISO(device.created_at).toRelative()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            </div>
+            {data?.ip && (
+              <Badge variant="outline" className="mt-3 text-xs">
+                IP: {data.ip}
+              </Badge>
             )}
           </div>
-        )}
-      </div>
-      <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg border border-neutral-100 dark:border-neutral-800 h-[150px]">
-        <VisitCalendar sessionCount={sessionCount?.data ?? []} />
-      </div>
 
-      <h2 className="text-lg font-bold mb-4">Sessions</h2>
-      <SessionsList
-        sessions={sessions}
-        isLoading={isLoadingSessions}
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
-        hasPrevPage={hasPrevPage}
-        userId={userId as string}
-      />
+          {/* Stats Grid */}
+          <SidebarCard>
+            <div className="grid grid-cols-2 gap-4">
+              <StatCard
+                icon={<Files className="w-3 h-3" />}
+                label="Sessions"
+                value={data?.sessions ?? "—"}
+                isLoading={isLoading}
+              />
+              <StatCard
+                icon={<PageviewIcon className="w-3 h-3" />}
+                label="Pageviews"
+                value={data?.pageviews ?? "—"}
+                isLoading={isLoading}
+              />
+              <StatCard
+                icon={<EventIcon className="w-3 h-3" />}
+                label="Events"
+                value={data?.events ?? "—"}
+                isLoading={isLoading}
+              />
+              <StatCard
+                icon={<Clock className="w-3 h-3" />}
+                label="Avg Duration"
+                value={data?.duration ? formatDuration(data.duration) : "—"}
+                isLoading={isLoading}
+              />
+              <StatCard
+                icon={<Calendar className="w-3 h-3" />}
+                label="First Seen"
+                value={
+                  data?.first_seen
+                    ? DateTime.fromSQL(data.first_seen, { zone: "utc" }).toLocal().toLocaleString(DateTime.DATE_MED)
+                    : "—"
+                }
+                isLoading={isLoading}
+              />
+              <StatCard
+                icon={<CalendarCheck className="w-3 h-3" />}
+                label="Last Seen"
+                value={
+                  data?.last_seen
+                    ? DateTime.fromSQL(data.last_seen, { zone: "utc" }).toLocal().toLocaleString(DateTime.DATE_MED)
+                    : "—"
+                }
+                isLoading={isLoading}
+              />
+            </div>
+          </SidebarCard>
+
+          {/* Location & Device Info */}
+          <SidebarCard>
+            <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
+              Location & Device
+            </h3>
+            {isLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex justify-between">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>
+                <InfoRow
+                  icon={<CountryFlag country={data?.country || ""} className="w-3 h-3" />}
+                  label="Country"
+                  value={data?.country ? getCountryName(data.country) : "—"}
+                />
+                <InfoRow
+                  icon={<Globe className="w-3 h-3" />}
+                  label="Region"
+                  value={
+                    <span className="truncate max-w-[140px] inline-block">
+                      {data?.region ? getRegionName(data.region) : "—"}
+                      {data?.city && `, ${data.city}`}
+                    </span>
+                  }
+                />
+                <InfoRow label="Language" value={data?.language ? getLanguageName(data.language) : "—"} />
+                <InfoRow
+                  icon={
+                    data?.device_type === "Desktop" ? (
+                      <Monitor className="w-3 h-3" />
+                    ) : data?.device_type === "Mobile" ? (
+                      <Smartphone className="w-3 h-3" />
+                    ) : data?.device_type === "Tablet" ? (
+                      <Tablet className="w-3 h-3" />
+                    ) : null
+                  }
+                  label="Device"
+                  value={data?.device_type ?? "—"}
+                />
+                <InfoRow
+                  icon={<Browser browser={data?.browser || "Unknown"} size={12} />}
+                  label="Browser"
+                  value={
+                    data?.browser ? `${data.browser}${data.browser_version ? ` v${data.browser_version}` : ""}` : "—"
+                  }
+                />
+                <InfoRow
+                  icon={<OperatingSystem os={data?.operating_system || ""} size={12} />}
+                  label="OS"
+                  value={
+                    data?.operating_system
+                      ? `${data.operating_system}${data.operating_system_version ? ` v${data.operating_system_version}` : ""}`
+                      : "—"
+                  }
+                />
+                <InfoRow
+                  label="Screen"
+                  value={data?.screen_width && data?.screen_height ? `${data.screen_width}×${data.screen_height}` : "—"}
+                />
+              </div>
+            )}
+          </SidebarCard>
+
+          {/* Activity Calendar */}
+          <SidebarCard className="h-[160px]">
+            <VisitCalendar sessionCount={sessionCount?.data ?? []} />
+          </SidebarCard>
+
+          {/* User Traits (identified users only) */}
+          {isIdentified && customTraits.length > 0 && (
+            <SidebarCard>
+              <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
+                User Traits
+              </h3>
+              <div className="space-y-1">
+                {customTraits.map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between py-1 border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                  >
+                    <span className="text-neutral-500 dark:text-neutral-400 text-xs capitalize">
+                      {key.replace(/_/g, " ")}
+                    </span>
+                    <span className="text-neutral-700 dark:text-neutral-200 text-sm truncate max-w-[160px]">
+                      {String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </SidebarCard>
+          )}
+
+          {/* Linked Devices (identified users only) */}
+          {isIdentified && data?.linked_devices && data.linked_devices.length > 0 && (
+            <SidebarCard>
+              <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                <Laptop className="w-3 h-3" />
+                Linked Devices ({data.linked_devices.length})
+              </h3>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {data.linked_devices.map(device => (
+                  <div
+                    key={device.anonymous_id}
+                    className="flex items-center justify-between py-1 border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                  >
+                    <span className="text-neutral-600 dark:text-neutral-300 font-mono text-xs truncate max-w-[140px]">
+                      {device.anonymous_id}
+                    </span>
+                    <span className="text-neutral-400 dark:text-neutral-500 text-xs">
+                      {DateTime.fromISO(device.created_at).toRelative()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </SidebarCard>
+          )}
+        </div>
+
+        {/* Right Content - Sessions */}
+        <div className="flex-1 min-w-0">
+          <SessionsList
+            sessions={sessions}
+            isLoading={isLoadingSessions}
+            page={page}
+            onPageChange={setPage}
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
+            userId={userId as string}
+          />
+        </div>
+      </div>
     </div>
   );
 }

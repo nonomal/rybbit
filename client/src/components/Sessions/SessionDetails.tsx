@@ -311,7 +311,7 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
   const { getRegionName } = useGetRegionName();
 
   return (
-    <div className="px-4 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800">
+    <div className="px-4 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-850">
       {isLoading ? (
         <SessionDetailsTimelineSkeleton itemCount={session.pageviews + session.events} />
       ) : error ? (
