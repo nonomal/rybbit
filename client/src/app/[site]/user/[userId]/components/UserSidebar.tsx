@@ -37,9 +37,9 @@ function SidebarCard({ children, className = "" }: { children: React.ReactNode; 
 // Info row component for consistent styling
 function InfoRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-neutral-50 dark:border-neutral-850 last:border-0">
-      <span className="text-neutral-500 dark:text-neutral-400 text-sm">{label}</span>
-      <span className="text-neutral-700 dark:text-neutral-200 text-sm  flex items-center gap-1.5">
+    <div className="flex items-center justify-between py-1.5 border-b border-neutral-50 dark:border-neutral-850 last:border-0 text-xs">
+      <span className="text-neutral-500 dark:text-neutral-400">{label}</span>
+      <span className="text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
         {icon}
         {value}
       </span>
@@ -90,7 +90,7 @@ export function UserSidebar({ data, isLoading, sessionCount, getRegionName }: Us
     : [];
 
   return (
-    <div className="w-full md:w-[300px] md:shrink-0 space-y-3">
+    <div className="w-full lg:w-[300px] md:shrink-0 space-y-3">
       {/* Stats Grid */}
       <SidebarCard>
         <div className="grid grid-cols-2 gap-4">
@@ -223,14 +223,10 @@ export function UserSidebar({ data, isLoading, sessionCount, getRegionName }: Us
             {customTraits.map(([key, value]) => (
               <div
                 key={key}
-                className="flex items-center justify-between py-1 border-b border-neutral-50 dark:border-neutral-850 last:border-0"
+                className="flex items-center justify-between py-1 border-b border-neutral-50 dark:border-neutral-850 last:border-0 text-xs"
               >
-                <span className="text-neutral-500 dark:text-neutral-400 text-xs capitalize">
-                  {key.replace(/_/g, " ")}
-                </span>
-                <span className="text-neutral-700 dark:text-neutral-200 text-sm truncate max-w-[160px]">
-                  {String(value)}
-                </span>
+                <span className="text-neutral-500 dark:text-neutral-400 capitalize">{key.replace(/_/g, " ")}</span>
+                <span className="text-neutral-700 dark:text-neutral-200 truncate max-w-[160px]">{String(value)}</span>
               </div>
             ))}
           </div>

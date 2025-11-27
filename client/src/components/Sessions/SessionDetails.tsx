@@ -389,7 +389,7 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
             <div className="grid grid-cols-1 lg:grid-cols-[auto_auto_auto] gap-8 mb-6">
               {/* User Information */}
               <div>
-                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-300 dark:border-neutral-800 pb-2">
+                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-100 dark:border-neutral-800 pb-2">
                   User Information
                 </h4>
                 <div className="space-y-3">
@@ -424,8 +424,8 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                   <div className="space-y-2">
                     {sessionDetails?.language && (
                       <div className="text-sm flex items-center gap-2">
-                        <span className="font-medium text-neutral-300 min-w-[80px]">Language:</span>
-                        <span className="text-neutral-400">
+                        <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Language:</span>
+                        <span className="text-neutral-500 dark:text-neutral-400">
                           {sessionDetails.language ? getLanguageName(sessionDetails.language) : "N/A"}
                         </span>
                       </div>
@@ -446,13 +446,13 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                     {sessionDetails?.region && getRegionName(sessionDetails.region) && (
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Region:</span>
-                        <span className="text-neutral-400">{getRegionName(sessionDetails.region)}</span>
+                        <span className="text-neutral-500 dark:text-neutral-400">{getRegionName(sessionDetails.region)}</span>
                       </div>
                     )}
                     {sessionDetails?.city && (
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">City:</span>
-                        <span className="text-neutral-400">{sessionDetails.city}</span>
+                        <span className="text-neutral-500 dark:text-neutral-400">{sessionDetails.city}</span>
                       </div>
                     )}
                   </div>
@@ -461,13 +461,13 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
 
               {/* Device Information */}
               <div>
-                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-300 dark:border-neutral-800 pb-2">
+                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-100 dark:border-neutral-800 pb-2">
                   Device Information
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">Device:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Device:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       {sessionDetails?.device_type === "Desktop" && <Monitor className="w-4 h-4" />}
                       {sessionDetails?.device_type === "Mobile" && <Smartphone className="w-4 h-4" />}
                       {sessionDetails?.device_type === "Tablet" && <Tablet className="w-4 h-4" />}
@@ -476,8 +476,8 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">Browser:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Browser:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       <Browser browser={sessionDetails?.browser || "Unknown"} />
                       <span>
                         {sessionDetails?.browser || "Unknown"}
@@ -489,8 +489,8 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">OS:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">OS:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       <OperatingSystem os={sessionDetails?.operating_system || ""} />
                       <span>
                         {sessionDetails?.operating_system || "Unknown"}
@@ -503,16 +503,16 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
 
                   {sessionDetails?.screen_width && sessionDetails?.screen_height ? (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium text-neutral-300 min-w-[80px]">Screen:</span>
-                      <span className="text-neutral-400">
+                      <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Screen:</span>
+                      <span className="text-neutral-500 dark:text-neutral-400">
                         {sessionDetails.screen_width} × {sessionDetails.screen_height}
                       </span>
                     </div>
                   ) : null}
                   {sessionDetails?.ip && (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium text-neutral-300 min-w-[80px]">IP:</span>
-                      <span className="text-neutral-400">{sessionDetails.ip}</span>
+                      <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">IP:</span>
+                      <span className="text-neutral-500 dark:text-neutral-400">{sessionDetails.ip}</span>
                     </div>
                   )}
                 </div>
@@ -520,27 +520,27 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
 
               {/* Source Information */}
               <div>
-                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-300 dark:border-neutral-800 pb-2">
+                <h4 className="text-sm font-medium mb-3 text-neutral-600 dark:text-neutral-300 border-b border-neutral-100 dark:border-neutral-800 pb-2">
                   Source Information
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">Channel:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Channel:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       <span>{sessionDetails?.channel || "None"}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">Referrer:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Referrer:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       <span>{sessionDetails?.referrer || "None"}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-neutral-300 min-w-[80px]">Entry Page:</span>
-                    <div className="flex items-center gap-1.5 text-neutral-400">
+                    <span className="font-medium text-neutral-600 dark:text-neutral-300 min-w-[80px]">Entry Page:</span>
+                    <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
                       <span>{sessionDetails?.entry_page || "None"}</span>
                     </div>
                   </div>
