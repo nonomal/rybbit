@@ -26,6 +26,11 @@ When identifying users, certain trait fields are treated specially by Rybbit:
 
 You can also include any custom fields you need for segmentation and analysis.
 
+## Limits
+
+- **Traits size**: Maximum 2KB per identify call. Traits are stored as JSON, so keep payloads concise.
+- **User ID length**: Maximum 255 characters.
+
 ## API Reference
 
 ### `window.rybbit.identify(userId, traits?)`
@@ -144,24 +149,6 @@ function checkUserStatus() {
   }
 }
 ```
-
-## Server-Side Identification
-
-For identifying users from server-side applications, you can use the HTTP API. See the [API documentation](/docs/api/sending-events) for details on the `/identify` endpoint.
-
-## Best Practices
-
-1. **Call identify() as early as possible** - Ideally right after the user logs in, so all subsequent events are associated with them.
-
-2. **Use a stable user ID** - Use your database's user ID or another immutable identifier, not something that could change like an email address.
-
-3. **Include useful traits** - The more context you provide (username, name, email, plan), the easier it is to understand your users in the dashboard.
-
-4. **Clear on logout** - Always call `clearUserId()` when users log out to ensure their activity isn't attributed to the wrong person.
-
-5. **Update traits when they change** - Use `setTraits()` to keep user metadata current without needing to re-identify.
-
----
 
 **Related Documentation:**
 - [Track Events](/docs/track-events)

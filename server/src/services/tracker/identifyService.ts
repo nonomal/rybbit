@@ -10,11 +10,24 @@ import { createServiceLogger } from "../../lib/logger/logger.js";
 
 const logger = createServiceLogger("identify-service");
 
+// Max traits size in bytes (2KB)
+const MAX_TRAITS_SIZE = 2048;
+
 // Validation schema for identify requests
 const identifyPayloadSchema = z.object({
   site_id: z.string().min(1),
   user_id: z.string().min(1).max(255),
-  traits: z.record(z.unknown()).optional(),
+  traits: z
+    .record(z.unknown())
+    .optional()
+    .refine(
+      (traits) => {
+        if (!traits) return true;
+        const size = new TextEncoder().encode(JSON.stringify(traits)).length;
+        return size <= MAX_TRAITS_SIZE;
+      },
+      { message: `Traits must be less than ${MAX_TRAITS_SIZE} bytes (2KB)` }
+    ),
   is_new_identify: z.boolean().default(true),
 });
 
