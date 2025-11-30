@@ -254,23 +254,7 @@ export function UserSidebar({ data, isLoading, sessionCount, getRegionName }: Us
           Activity Calendar
         </h3>
         <div className="h-[140px]">
-          {isLoading ? (
-            <div className="flex flex-col gap-1.5 h-full">
-              {/* Calendar grid skeleton - 7 rows for weeks */}
-              {Array.from({ length: 7 }).map((_, rowIndex) => (
-                <div key={rowIndex} className="flex gap-1 flex-1">
-                  {Array.from({ length: 52 }).map((_, colIndex) => (
-                    <Skeleton
-                      key={colIndex}
-                      className="flex-1 h-full rounded-sm"
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <VisitCalendar sessionCount={sessionCount} />
-          )}
+          <VisitCalendar sessionCount={sessionCount} />
         </div>
       </SidebarCard>
 

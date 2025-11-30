@@ -113,7 +113,7 @@ export async function getSessions(req: FastifyRequest<GetSessionsRequest>, res: 
       FROM events
       WHERE
           site_id = {siteId:Int32}
-          ${userId ? ` AND (user_id = {user_id:String} OR identified_user_id = {user_id:String})` : ""}
+          ${userId ? ` AND (events.user_id = {user_id:String} OR events.identified_user_id = {user_id:String})` : ""}
           ${timeStatement}
       GROUP BY
           session_id

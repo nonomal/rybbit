@@ -68,7 +68,7 @@ SELECT
 FROM events
 WHERE
     site_id = {siteId:Int32}
-    AND (identified_user_id = {userId:String} OR user_id = {userId:String})
+    AND (events.identified_user_id = {userId:String} OR events.user_id = {userId:String})
     ${filterStatement}
     ${timeStatement}
 ORDER BY timestamp ASC

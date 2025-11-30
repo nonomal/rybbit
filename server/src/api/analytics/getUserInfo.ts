@@ -86,7 +86,7 @@ export async function getUserInfo(
         FROM
             events
         WHERE
-            (identified_user_id = {userId:String} OR user_id = {userId:String})
+            (events.identified_user_id = {userId:String} OR events.user_id = {userId:String})
             AND site_id = {site:Int32}
         GROUP BY
             session_id

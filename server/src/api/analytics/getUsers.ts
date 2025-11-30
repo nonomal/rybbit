@@ -65,7 +65,7 @@ export async function getUsers(req: FastifyRequest<GetUsersRequest>, res: Fastif
 WITH AggregatedUsers AS (
     SELECT
         -- Group by effective user: identified_user_id for identified users, user_id (device) for anonymous
-        COALESCE(NULLIF(identified_user_id, ''), user_id) AS effective_user_id,
+        COALESCE(NULLIF(events.identified_user_id, ''), events.user_id) AS effective_user_id,
         argMax(user_id, timestamp) AS user_id,
         argMax(identified_user_id, timestamp) AS identified_user_id,
         argMax(country, timestamp) AS country,
@@ -120,7 +120,7 @@ FROM (
 `
     : `
 SELECT
-    count(DISTINCT COALESCE(NULLIF(identified_user_id, ''), user_id)) AS total_count
+    count(DISTINCT COALESCE(NULLIF(events.identified_user_id, ''), events.user_id)) AS total_count
 FROM events
 WHERE
     site_id = {siteId:Int32}
