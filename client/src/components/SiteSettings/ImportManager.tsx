@@ -116,6 +116,7 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
           );
 
           setSelectedFile(null);
+          setSelectedPlatform(undefined);
           setFileError("");
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
