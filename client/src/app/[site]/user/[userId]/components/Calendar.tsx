@@ -12,7 +12,7 @@ export const VisitCalendar = ({ sessionCount }: { sessionCount: UserSessionCount
   const data = sessionCount
     .map(e => ({
       value: e.sessions,
-      day: DateTime.fromSQL(e.date ?? 0)
+      day: DateTime.fromSQL(e.date ?? 0, { zone: "utc" })
         .toLocal()
         .toFormat("y-LL-dd"),
     }))
