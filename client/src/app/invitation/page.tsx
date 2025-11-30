@@ -15,14 +15,15 @@ import { Signup } from "./components/signup";
 import { useQueryStates, parseAsString } from "nuqs";
 
 function AuthComponent() {
-  const [{ organization, inviterEmail }] = useQueryStates({
+  const [{ invitationId, organization, inviterEmail }] = useQueryStates({
+    invitationId: parseAsString,
     organization: parseAsString,
     inviterEmail: parseAsString,
   });
   const [activeTab, setActiveTab] = useState<"login" | "signup">("signup");
 
   // Construct callback URL to return to this page after OAuth
-  const callbackURL = `/invitation?organization=${organization}&inviterEmail=${inviterEmail}`;
+  const callbackURL = `/invitation?invitationId=${invitationId}&organization=${organization}&inviterEmail=${inviterEmail}`;
 
   return (
     <Card className="w-full max-w-md p-1">
