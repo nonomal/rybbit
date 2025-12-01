@@ -113,16 +113,15 @@ export function ImportManager({ siteId, disabled }: ImportManagerProps) {
         onSuccess: response => {
           const { importId, allowedDateRange } = response.data;
 
-          workerManagerRef.current = new CsvParser();
-
-          workerManagerRef.current.startImport(
-            selectedFile,
+          workerManagerRef.current = new CsvParser(
             siteId,
             importId,
             selectedPlatform,
             allowedDateRange.earliestAllowedDate,
             allowedDateRange.latestAllowedDate
           );
+
+          workerManagerRef.current.startImport(selectedFile);
 
           setSelectedFile(null);
           setSelectedPlatform("");

@@ -43,44 +43,34 @@ interface SimpleAnalyticsEvent {
 }
 
 export class CsvParser {
-  private cancelled: boolean;
-  private siteId: number;
-  private importId: string;
-  private platform: ImportPlatform;
-  private earliestAllowedDate: DateTime | null;
-  private latestAllowedDate: DateTime | null;
+  private cancelled: boolean = false;
+  private readonly siteId: number;
+  private readonly importId: string;
+  private readonly platform: ImportPlatform;
+  private readonly earliestAllowedDate: DateTime;
+  private readonly latestAllowedDate: DateTime;
 
-  constructor() {
-    this.cancelled = false;
-    this.siteId = 0;
-    this.importId = "";
-    this.platform = "umami";
-    this.earliestAllowedDate = null;
-    this.latestAllowedDate = null;
-  }
-
-  startImport(
-    file: File,
+  constructor(
     siteId: number,
     importId: string,
     platform: ImportPlatform,
     earliestAllowedDate: string,
     latestAllowedDate: string
-  ): void {
+  ) {
     this.siteId = siteId;
     this.importId = importId;
     this.platform = platform;
-
     this.earliestAllowedDate = DateTime.fromFormat(earliestAllowedDate, "yyyy-MM-dd", { zone: "utc" }).startOf("day");
     this.latestAllowedDate = DateTime.fromFormat(latestAllowedDate, "yyyy-MM-dd", { zone: "utc" }).endOf("day");
 
-    if (!this.earliestAllowedDate.isValid) {
+    // Pre-validate dates during instantiation
+    if (!this.earliestAllowedDate.isValid || !this.latestAllowedDate.isValid) {
       this.cancelled = true;
-      return;
     }
+  }
 
-    if (!this.latestAllowedDate.isValid) {
-      this.cancelled = true;
+  startImport(file: File): void {
+    if (this.cancelled) {
       return;
     }
 
@@ -152,11 +142,11 @@ export class CsvParser {
       return false;
     }
 
-    if (this.earliestAllowedDate && createdAt < this.earliestAllowedDate) {
+    if (createdAt < this.earliestAllowedDate) {
       return false;
     }
 
-    if (this.latestAllowedDate && createdAt > this.latestAllowedDate) {
+    if (createdAt > this.latestAllowedDate) {
       return false;
     }
 
