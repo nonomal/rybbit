@@ -1,4 +1,6 @@
 export default {
+  "rybbit-pricing":
+    "Rybbit vs Heap Pricing - A Clear, Affordable Alternative to Heap Analytics",
   "5k-stars":
     "How my open source SaaS got 5,000 Github stars in 9 days with zero marketing effort",
   "website-traffic-drop":
