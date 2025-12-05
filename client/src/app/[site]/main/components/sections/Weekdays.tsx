@@ -87,16 +87,16 @@ export function Weekdays() {
     // Calculate intensity level 1-10
     const ratio = value / maxValue;
 
-    // Use predefined opacity classes that are guaranteed to exist in Tailwind
-    if (ratio < 0.1) return "bg-emerald-500 bg-opacity-10";
-    if (ratio < 0.2) return "bg-emerald-500 bg-opacity-20";
-    if (ratio < 0.3) return "bg-emerald-500 bg-opacity-30";
-    if (ratio < 0.4) return "bg-emerald-500 bg-opacity-40";
-    if (ratio < 0.5) return "bg-emerald-500 bg-opacity-50";
-    if (ratio < 0.6) return "bg-emerald-500 bg-opacity-60";
-    if (ratio < 0.7) return "bg-emerald-500 bg-opacity-70";
-    if (ratio < 0.8) return "bg-emerald-500 bg-opacity-80";
-    if (ratio < 0.9) return "bg-emerald-500 bg-opacity-90";
+    // Use slash notation for opacity (Tailwind v4)
+    if (ratio < 0.1) return "bg-emerald-500/10";
+    if (ratio < 0.2) return "bg-emerald-500/20";
+    if (ratio < 0.3) return "bg-emerald-500/30";
+    if (ratio < 0.4) return "bg-emerald-500/40";
+    if (ratio < 0.5) return "bg-emerald-500/50";
+    if (ratio < 0.6) return "bg-emerald-500/60";
+    if (ratio < 0.7) return "bg-emerald-500/70";
+    if (ratio < 0.8) return "bg-emerald-500/80";
+    if (ratio < 0.9) return "bg-emerald-500/90";
     return "bg-emerald-500";
   };
 
