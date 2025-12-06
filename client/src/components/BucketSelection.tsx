@@ -160,7 +160,7 @@ export function BucketSelection() {
     <Select value={bucket} onValueChange={setBucket}>
       <SelectTrigger className="w-[90px]" size="sm">
         <div className="flex items-center gap-1">
-          <TimerReset className="w-4 h-4" />
+          <TimerReset className="w-3 h-3" />
           <SelectValue />
         </div>
       </SelectTrigger>

@@ -176,3 +176,26 @@ export function useInfiniteMetric({
     staleTime: 60_000,
   });
 }
+
+/**
+ * Standalone fetch function for metric data (used for exports)
+ */
+export async function fetchMetric(
+  site: number | string,
+  parameter: FilterParameter,
+  time: Time,
+  filters: Filter[] = [],
+  limit = 100
+): Promise<MetricResponse[]> {
+  const queryParams = {
+    ...getQueryParams(time),
+    parameter,
+    limit,
+    filters: filters.length > 0 ? filters : undefined,
+  };
+  const response = await authedFetch<{ data: { data: MetricResponse[] } }>(
+    `/metric/${site}`,
+    queryParams
+  );
+  return response.data.data;
+}

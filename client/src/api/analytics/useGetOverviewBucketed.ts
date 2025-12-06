@@ -1,4 +1,5 @@
 import { Filter, TimeBucket } from "@rybbit/shared";
+import { Time } from "../../components/DateSelector/types";
 import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useStore } from "../../lib/store";
 import { APIResponse } from "../types";
@@ -81,4 +82,21 @@ export function useGetOverviewBucketed({
     staleTime: 60_000,
     ...props,
   });
+}
+
+/**
+ * Standalone fetch function for overview bucketed data (used for exports)
+ */
+export async function fetchOverviewBucketed(
+  site: number | string,
+  time: Time,
+  bucket: TimeBucket = "day",
+  filters: Filter[] = []
+): Promise<GetOverviewBucketedResponse> {
+  const queryParams = getQueryParams(time, { bucket, filters });
+  const response = await authedFetch<APIResponse<GetOverviewBucketedResponse>>(
+    `/overview-bucketed/${site}`,
+    queryParams
+  );
+  return response.data;
 }
