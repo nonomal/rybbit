@@ -213,9 +213,9 @@ export function ResponsePanel() {
   }
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-4">
+    <div className="h-full overflow-y-auto overflow-x-hidden p-4 space-y-4 min-w-0">
       {/* Request URL */}
-      <div className="space-y-2">
+      <div className="space-y-2 min-w-0">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
             Request URL
@@ -224,7 +224,7 @@ export function ResponsePanel() {
             variant="ghost"
             size="sm"
             onClick={handleCopyUrl}
-            className="h-6 px-2 text-xs"
+            className="h-6 px-2 text-xs shrink-0"
           >
             {copied ? (
               <CheckCircle className="h-3 w-3 mr-1" />
@@ -234,8 +234,8 @@ export function ResponsePanel() {
             {copied ? "Copied" : "Copy"}
           </Button>
         </div>
-        <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded text-xs font-mono break-all">
-          {fullUrl}
+        <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded text-xs font-mono break-all overflow-x-auto max-w-full">
+          <span className="break-all">{fullUrl}</span>
         </div>
       </div>
 

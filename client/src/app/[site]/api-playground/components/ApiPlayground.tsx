@@ -18,7 +18,7 @@ export function ApiPlayground() {
       </div>
 
       {/* Right Column - Response Panel */}
-      <div className="flex-1 border-l border-neutral-200 dark:border-neutral-800">
+      <div className="flex-1 min-w-0 border-l border-neutral-200 dark:border-neutral-800 overflow-hidden">
         <ResponsePanel />
       </div>
     </div>
