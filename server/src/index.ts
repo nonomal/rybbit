@@ -33,7 +33,6 @@ import { getSessions } from "./api/analytics/getSessions.js";
 import { getMetric } from "./api/analytics/getMetric.js";
 import { getUserInfo } from "./api/analytics/getUserInfo.js";
 import { getUserSessionCount } from "./api/analytics/getUserSessionCount.js";
-import { getUserSessions } from "./api/analytics/getUserSessions.js";
 import { getUsers } from "./api/analytics/getUsers.js";
 import { createGoal } from "./api/analytics/goals/createGoal.js";
 import { deleteGoal } from "./api/analytics/goals/deleteGoal.js";
