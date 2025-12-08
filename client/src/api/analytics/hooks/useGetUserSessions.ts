@@ -10,13 +10,21 @@ import {
   SessionPageviewsAndEvents,
   UserSessionCountResponse,
 } from "../endpoints";
+import { Time } from "../../../components/DateSelector/types";
 
-export function useGetSessions(
-  userId?: string,
-  page: number = 1,
-  limit: number = 100,
-  identifiedOnly: boolean = false
-) {
+export function useGetSessions({
+  userId,
+  page = 1,
+  limit = 100,
+  identifiedOnly = false,
+  timeOverride,
+}: {
+  userId?: string;
+  page?: number;
+  limit?: number;
+  identifiedOnly?: boolean;
+  timeOverride?: Time;
+}) {
   const { time, site } = useStore();
 
   const filteredFilters = getFilteredFilters(SESSION_PAGE_FILTERS);
@@ -25,10 +33,10 @@ export function useGetSessions(
   // Otherwise use buildApiParams which handles past-minutes mode
   const params = userId
     ? { startDate: "", endDate: "", timeZone, filters: filteredFilters }
-    : buildApiParams(time, { filters: filteredFilters });
+    : buildApiParams(timeOverride || time, { filters: filteredFilters });
 
   return useQuery<{ data: GetSessionsResponse }>({
-    queryKey: ["sessions", time, site, filteredFilters, userId, page, limit, identifiedOnly],
+    queryKey: ["sessions", timeOverride || time, site, filteredFilters, userId, page, limit, identifiedOnly],
     queryFn: () => {
       return fetchSessions(site, {
         ...params,
@@ -42,7 +50,7 @@ export function useGetSessions(
   });
 }
 
-export function useGetSessionsInfinite(userId?: string) {
+export function useGetSessionsInfinite(userId?: string, timeOverride?: Time) {
   const { time, site } = useStore();
 
   const filteredFilters = getFilteredFilters(SESSION_PAGE_FILTERS);
@@ -51,10 +59,10 @@ export function useGetSessionsInfinite(userId?: string) {
   // Otherwise use buildApiParams which handles past-minutes mode
   const params = userId
     ? { startDate: "", endDate: "", timeZone, filters: filteredFilters }
-    : buildApiParams(time, { filters: filteredFilters });
+    : buildApiParams(timeOverride || time, { filters: filteredFilters });
 
   return useInfiniteQuery<{ data: GetSessionsResponse }>({
-    queryKey: ["sessions-infinite", time, site, filteredFilters, userId],
+    queryKey: ["sessions-infinite", timeOverride || time, site, filteredFilters, userId],
     queryFn: ({ pageParam = 1 }) => {
       return fetchSessions(site, {
         ...params,

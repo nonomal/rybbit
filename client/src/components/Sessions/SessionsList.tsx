@@ -17,6 +17,7 @@ interface SessionsListProps {
   userId?: string;
   identifiedOnly?: boolean;
   setIdentifiedOnly?: (identifiedOnly: boolean) => void;
+  pageSize?: number;
 }
 
 export function SessionsList({
@@ -30,6 +31,7 @@ export function SessionsList({
   userId,
   identifiedOnly,
   setIdentifiedOnly,
+  pageSize,
 }: SessionsListProps) {
   if (sessions.length === 0 && !isLoading) {
     return (
@@ -64,7 +66,7 @@ export function SessionsList({
 
       {/* Session cards */}
       {isLoading ? (
-        <SessionCardSkeleton userId={userId} />
+        <SessionCardSkeleton userId={userId} count={pageSize} />
       ) : (
         sessions.map((session, index) => (
           <SessionCard key={`${session.session_id}-${index}`} session={session} userId={userId} />

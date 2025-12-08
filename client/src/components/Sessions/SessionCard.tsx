@@ -160,7 +160,7 @@ export function SessionCard({ session, onClick, userId, expandedByDefault }: Ses
   );
 }
 
-export const SessionCardSkeleton = memo(({ userId }: { userId?: string }) => {
+export const SessionCardSkeleton = memo(({ userId, count }: { userId?: string; count?: number }) => {
   // Function to get a random width class for skeletons
   const getRandomWidth = () => {
     const widths = ["w-16", "w-20", "w-24", "w-28", "w-32", "w-36", "w-40", "w-44", "w-48"];
@@ -180,7 +180,7 @@ export const SessionCardSkeleton = memo(({ userId }: { userId?: string }) => {
   };
 
   // Create multiple skeletons for a realistic loading state
-  const skeletons = Array.from({ length: 25 }).map((_, index) => (
+  const skeletons = Array.from({ length: count || 25 }).map((_, index) => (
     <div
       className="rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-850 overflow-hidden"
       key={index}

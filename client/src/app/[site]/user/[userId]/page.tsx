@@ -34,7 +34,11 @@ export default function UserPage() {
 
   const { data, isLoading } = useUserInfo(Number(site), userId as string);
   const { data: sessionCount } = useGetUserSessionCount(userId as string);
-  const { data: sessionsData, isLoading: isLoadingSessions } = useGetSessions(userId as string, page, LIMIT + 1);
+  const { data: sessionsData, isLoading: isLoadingSessions } = useGetSessions({
+    userId: userId as string,
+    page: page,
+    limit: LIMIT + 1,
+  });
 
   const allSessions = sessionsData?.data || [];
   const hasNextPage = allSessions.length > LIMIT;
