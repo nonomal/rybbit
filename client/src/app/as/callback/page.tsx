@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
@@ -60,6 +60,8 @@ export default function AppSumoSignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [appsumoCode, setAppsumoCode] = useState<string>("");
+  const [isExistingUser, setIsExistingUser] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const router = useRouter();
 
   // Step 1: Account creation
@@ -75,6 +77,60 @@ export default function AppSumoSignupPage() {
   const [organizationId, setOrganizationId] = useState("");
   const [domain, setDomain] = useState("");
 
+  // Track if license activation has been attempted for existing users
+  const [licenseActivated, setLicenseActivated] = useState(false);
+
+  // Use hooks to get auth state
+  const { user, isPending: isUserPending } = userStore();
+  const { data: activeOrganization, isPending: isOrgPending } =
+    authClient.useActiveOrganization();
+
+  // Initialize flow based on user auth state
+  useEffect(() => {
+    // Wait for both user and org state to resolve
+    if (isUserPending || isOrgPending) {
+      return;
+    }
+
+    if (!user) {
+      // New user - start at step 1
+      setIsInitializing(false);
+      return;
+    }
+
+    // Existing user
+    setIsExistingUser(true);
+
+    if (activeOrganization?.id) {
+      // Has active org - set it and go to step 3
+      setOrganizationId(activeOrganization.id);
+      setCurrentStep(3);
+    } else {
+      // No active org - need to create one (step 2)
+      setCurrentStep(2);
+    }
+
+    setIsInitializing(false);
+  }, [user, isUserPending, activeOrganization, isOrgPending]);
+
+  // Activate license for existing users once code and organization are available
+  useEffect(() => {
+    const activateForExistingUser = async () => {
+      if (
+        isExistingUser &&
+        appsumoCode &&
+        organizationId &&
+        !licenseActivated &&
+        !isInitializing
+      ) {
+        setLicenseActivated(true);
+        await activateLicenseForOrg(organizationId, appsumoCode);
+      }
+    };
+
+    activateForExistingUser();
+  }, [isExistingUser, appsumoCode, organizationId, licenseActivated, isInitializing]);
+
   // Handle organization name change and generate slug
   const handleOrgNameChange = (value: string) => {
     setOrgName(value);
@@ -84,6 +140,40 @@ export default function AppSumoSignupPage() {
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, "");
       setOrgSlug(generatedSlug);
+    }
+  };
+
+  // Helper function to activate AppSumo license for an organization
+  const activateLicenseForOrg = async (orgId: string, code: string): Promise<boolean> => {
+    if (!code) return true; // No code to activate, consider it success
+
+    try {
+      const response = await fetch("/api/as/activate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          code: code,
+          organizationId: orgId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to activate AppSumo license");
+      }
+
+      const licenseData = await response.json();
+      console.log("AppSumo license activated:", licenseData);
+      return true;
+    } catch (licenseError) {
+      console.error("Error activating AppSumo license:", licenseError);
+      setError(
+        "License activation failed. Please contact support with your license key."
+      );
+      return false;
     }
   };
 
@@ -161,33 +251,8 @@ export default function AppSumoSignupPage() {
 
       // Activate AppSumo license if code is present
       if (appsumoCode) {
-        try {
-          const response = await fetch("/api/as/activate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-              code: appsumoCode,
-              organizationId: data.id,
-            }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Failed to activate AppSumo license");
-          }
-
-          const licenseData = await response.json();
-          console.log("AppSumo license activated:", licenseData);
-        } catch (licenseError) {
-          console.error("Error activating AppSumo license:", licenseError);
-          setError(
-            "Organization created, but license activation failed. Please contact support with your license key."
-          );
-          // Continue to next step even if license activation fails
-        }
+        await activateLicenseForOrg(data.id, appsumoCode);
+        // Continue to next step even if license activation fails (error is already set by helper)
       }
 
       setCurrentStep(3);
@@ -296,9 +361,13 @@ export default function AppSumoSignupPage() {
       case 2:
         return (
           <motion.div initial="hidden" animate="visible" variants={contentVariants}>
-            <h2 className="text-2xl font-semibold mb-2">Create your organization</h2>
+            <h2 className="text-2xl font-semibold mb-2">
+              {isExistingUser ? "Create an organization" : "Create your organization"}
+            </h2>
             <p className="text-sm text-muted-foreground mb-6">
-              Your AppSumo license will be activated for this organization
+              {isExistingUser
+                ? "Create an organization to activate your AppSumo license"
+                : "Your AppSumo license will be activated for this organization"}
             </p>
             <div className="space-y-4">
               <div className="space-y-2">
@@ -371,6 +440,18 @@ export default function AppSumoSignupPage() {
         return null;
     }
   };
+
+  // Show loading state while initializing
+  if (isInitializing) {
+    return (
+      <div className="flex justify-center items-center h-dvh w-full p-4">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center h-dvh w-full p-4 ">
