@@ -76,7 +76,7 @@ export function ReplayDrawer({ sessionId, open, onOpenChange }: ReplayDrawerProp
           {/* Player */}
           <div ref={containerRef} className="relative flex-1" style={{ height: "calc(90vh - 40px)" }}>
             {dimensions.width > 0 && dimensions.height > 0 && (
-              <ReplayPlayer width={dimensions.width} height={dimensions.height} />
+              <ReplayPlayer width={dimensions.width} height={dimensions.height} isDrawer={true} />
             )}
           </div>
 

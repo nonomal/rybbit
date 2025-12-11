@@ -11,7 +11,7 @@ import { ReplayPlayerCore } from "./ReplayPlayerCore";
 import { SKIP_SECONDS } from "./utils/replayUtils";
 import { ReplayPlayerTopbar } from "./ReplayPlayerTopbar";
 
-export function ReplayPlayer({ width, height }: { width: number; height: number }) {
+export function ReplayPlayer({ width, height, isDrawer }: { width: number; height: number; isDrawer?: boolean }) {
   const params = useParams();
   const siteId = Number(params.site);
   const {
@@ -22,9 +22,7 @@ export function ReplayPlayer({ width, height }: { width: number; height: number 
     currentTime,
     setCurrentTime,
     duration,
-    playbackSpeed,
     setPlaybackSpeed,
-    activityPeriods,
     resetPlayerState,
   } = useReplayStore();
 
@@ -111,16 +109,11 @@ export function ReplayPlayer({ width, height }: { width: number; height: number 
       <ReplayPlayerCore data={data} width={width} height={height} onPlayPause={handlePlayPause} isPlaying={isPlaying} />
 
       <ReplayPlayerControls
-        player={player}
-        isPlaying={isPlaying}
-        currentTime={currentTime}
-        duration={duration}
-        playbackSpeed={playbackSpeed}
-        activityPeriods={activityPeriods}
         events={data?.events || []}
         onPlayPause={handlePlayPause}
         onSliderChange={handleSliderChange}
         onSpeedChange={handleSpeedChange}
+        isDrawer={isDrawer}
       />
     </div>
   );

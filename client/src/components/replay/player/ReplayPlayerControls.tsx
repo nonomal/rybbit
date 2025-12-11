@@ -1,34 +1,30 @@
-import { Pause, Play } from "lucide-react";
+import { Eye, Maximize2, Pause, Play } from "lucide-react";
 import { ActivitySlider } from "@/components/ui/activity-slider";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatTime, PLAYBACK_SPEEDS } from "./utils/replayUtils";
+import { useReplayStore } from "../replayStore";
+import { ReplayDrawer } from "../../Sessions/ReplayDrawer";
+import { useState } from "react";
 
 interface ReplayPlayerControlsProps {
-  player: any;
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
-  playbackSpeed: string;
-  activityPeriods: { start: number; end: number }[];
   events: any[];
   onPlayPause: () => void;
   onSliderChange: (value: number[]) => void;
   onSpeedChange: (speed: string) => void;
+  isDrawer?: boolean;
 }
 
 export function ReplayPlayerControls({
-  player,
-  isPlaying,
-  currentTime,
-  duration,
-  playbackSpeed,
-  activityPeriods,
   events,
   onPlayPause,
   onSliderChange,
   onSpeedChange,
+  isDrawer,
 }: ReplayPlayerControlsProps) {
+  const { sessionId, player, isPlaying, currentTime, duration, playbackSpeed, activityPeriods } = useReplayStore();
+
+  const [replayDrawerOpen, setReplayDrawerOpen] = useState(false);
   return (
     <div className="border border-neutral-100 dark:border-neutral-800 p-2 pb-3 bg-white dark:bg-neutral-900 rounded-b-lg pt-6">
       <div className="flex items-center">
@@ -67,6 +63,12 @@ export function ReplayPlayerControls({
             ))}
           </SelectContent>
         </Select>
+        {!isDrawer && (
+          <Button variant="ghost" size="smIcon" onClick={() => setReplayDrawerOpen(true)}>
+            <Maximize2 className="w-4 h-4" />
+          </Button>
+        )}
+        <ReplayDrawer sessionId={sessionId} open={replayDrawerOpen} onOpenChange={setReplayDrawerOpen} />
       </div>
     </div>
   );
