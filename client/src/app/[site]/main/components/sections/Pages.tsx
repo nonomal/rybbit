@@ -28,9 +28,9 @@ export function Pages() {
             <div className="overflow-x-auto">
               <TabsList>
                 <TabsTrigger value="pages">Pages</TabsTrigger>
-                <TabsTrigger value="page_title">Page Titles</TabsTrigger>
-                <TabsTrigger value="entry_pages">Entry Pages</TabsTrigger>
-                <TabsTrigger value="exit_pages">Exit Pages</TabsTrigger>
+                <TabsTrigger value="page_title">Titles</TabsTrigger>
+                <TabsTrigger value="entry_pages">Entries</TabsTrigger>
+                <TabsTrigger value="exit_pages">Exits</TabsTrigger>
                 <TabsTrigger value="hostname">Hostnames</TabsTrigger>
               </TabsList>
             </div>

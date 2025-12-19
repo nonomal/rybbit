@@ -5,6 +5,15 @@ description: Bypass ad blockers and improve tracking accuracy by proxying Rybbit
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { Callout } from 'fumadocs-ui/components/callout';
+import {
+  SiAstro,
+  SiCloudflare,
+  SiExpress,
+  SiLaravel,
+  SiNextdotjs,
+  SiNginx,
+  SiVercel
+} from '@icons-pack/react-simple-icons';
 
 Proxying Rybbit's tracking script through your own domain helps bypass ad blockers and improves tracking accuracy by making all analytics requests appear as first-party traffic.
 
@@ -86,30 +95,53 @@ Here's the flow when you proxy Rybbit:
 Select the framework or platform that matches your setup:
 
 <Cards>
-  <Card title="Next.js" href="/docs/proxy-guide/next-js">
-    Configure Next.js rewrites for seamless proxying
-  </Card>
-  <Card title="Nginx" href="/docs/proxy-guide/nginx">
-    Set up Nginx reverse proxy with caching
-  </Card>
-  <Card title="Caddy" href="/docs/proxy-guide/caddy">
-    Use Caddy's reverse proxy with automatic HTTPS
-  </Card>
-  <Card title="Vercel" href="/docs/proxy-guide/vercel">
-    Deploy proxy configuration on Vercel
-  </Card>
-  <Card title="Express.js" href="/docs/proxy-guide/express">
-    Proxy through Express middleware
-  </Card>
-  <Card title="Laravel" href="/docs/proxy-guide/laravel">
-    Implement proxy in Laravel PHP application
-  </Card>
-  <Card title="Astro" href="/docs/proxy-guide/astro">
-    Configure Astro middleware for proxying
-  </Card>
-  <Card title="Cloudflare Workers" href="/docs/proxy-guide/cloudflare-workers">
-    Use Cloudflare Workers for edge proxying
-  </Card>
+  <Card
+    icon={<SiNextdotjs />}
+    title="Next.js"
+    href="/docs/proxy-guide/next-js"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiNginx />}
+    title="Nginx"
+    href="/docs/proxy-guide/nginx"
+    className="flex items-center gap-2"
+  />
+  <Card
+    title="Caddy"
+    href="/docs/proxy-guide/caddy"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiVercel />}
+    title="Vercel"
+    href="/docs/proxy-guide/vercel"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiExpress />}
+    title="Express.js"
+    href="/docs/proxy-guide/express"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiLaravel />}
+    title="Laravel"
+    href="/docs/proxy-guide/laravel"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiAstro />}
+    title="Astro"
+    href="/docs/proxy-guide/astro"
+    className="flex items-center gap-2"
+  />
+  <Card
+    icon={<SiCloudflare />}
+    title="Cloudflare Workers"
+    href="/docs/proxy-guide/cloudflare-workers"
+    className="flex items-center gap-2"
+  />
 </Cards>
 
 ## Generic Implementation

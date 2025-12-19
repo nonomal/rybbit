@@ -7,22 +7,7 @@ import { DateTime } from "luxon";
 import { getDeviceType } from "../../../utils.js";
 import { deriveKeyOnlySchema } from "./utils.js";
 
-export interface SimpleAnalyticsEvent {
-  added_iso: string;
-  country_code: string;
-  datapoint: string;
-  document_referrer: string;
-  hostname: string;
-  lang_language: string;
-  lang_region: string;
-  path: string;
-  query: string;
-  screen_height: string;
-  screen_width: string;
-  session_id: string;
-  user_agent: string;
-  uuid: string;
-}
+export type SimpleAnalyticsEvent = z.input<typeof SimpleAnalyticsImportMapper.simpleAnalyticsEventKeyOnlySchema>;
 
 export class SimpleAnalyticsImportMapper {
   private static readonly simpleAnalyticsEventSchema = z.object({
