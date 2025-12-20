@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { getTimezone } from "@/lib/store";
 import { ExternalLink, Eye, Laptop, MousePointerClick, Smartphone } from "lucide-react";
 import { DateTime } from "luxon";
 import Link from "next/link";
@@ -44,7 +45,7 @@ export function EventLogItem({ event }: EventLogItemProps) {
   // Parse event timestamp
   const eventTime = DateTime.fromSQL(event.timestamp, {
     zone: "utc",
-  }).toLocal();
+  }).setZone(getTimezone());
 
   // Determine event type
   const isPageview = event.type === "pageview";

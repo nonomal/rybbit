@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { getTimezone } from "@/lib/store";
 import { ArrowRight, ChevronDown, ChevronRight, Video } from "lucide-react";
 import { DateTime } from "luxon";
 import { memo, useState } from "react";
@@ -159,7 +160,7 @@ export function SessionCard({ session, onClick, userId, expandedByDefault }: Ses
                 zone: "utc",
               })
                 .setLocale(userLocale)
-                .toLocal()
+                .setZone(getTimezone())
                 .toFormat(hour12 ? "MMM d, h:mm a" : "dd MMM, HH:mm")}
             </span>
             <span className="text-neutral-500 dark:text-neutral-400">•</span>

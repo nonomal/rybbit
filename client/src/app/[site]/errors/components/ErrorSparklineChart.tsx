@@ -3,6 +3,7 @@
 import { GetErrorBucketedResponse } from "@/api/analytics/endpoints";
 import { hour12, userLocale } from "@/lib/dateTimeUtils";
 import { useNivoTheme } from "@/lib/nivo";
+import { getTimezone } from "@/lib/store";
 import { ResponsiveBar } from "@nivo/bar";
 import { DateTime } from "luxon";
 import { useMemo } from "react";
@@ -76,7 +77,7 @@ export function ErrorSparklineChart({ data, isHovering, errorMessage, isLoading 
         value: number;
         data: { time: string; errors: number };
       }) => {
-        const currentTime = DateTime.fromFormat(data.time, "yyyy-MM-dd HH:mm:ss", { zone: "utc" }).toLocal();
+        const currentTime = DateTime.fromFormat(data.time, "yyyy-MM-dd HH:mm:ss", { zone: "utc" }).setZone(getTimezone());
         const currentY = Number(value);
 
         return (

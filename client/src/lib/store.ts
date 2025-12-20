@@ -172,6 +172,11 @@ export const getTimezone = () => {
   return timezone === "system" ? getSystemTimezone() : timezone;
 };
 
+// Helper to convert a DateTime to the user's selected timezone
+export const toUserTimezone = (dt: DateTime): DateTime => {
+  return dt.setZone(getTimezone());
+};
+
 export const resetStore = () => {
   const { setSite, setTime, setBucket, setSelectedStat, setFilters } = useStore.getState();
   setSite("");

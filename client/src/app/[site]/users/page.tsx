@@ -9,6 +9,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { getTimezone } from "@/lib/store";
 import { ArrowDown, ArrowUp, ArrowUpDown, Monitor, Smartphone, Tablet } from "lucide-react";
 import { DateTime } from "luxon";
 import Link from "next/link";
@@ -93,7 +94,7 @@ export default function UsersPage() {
 
   // Format relative time with special handling for times less than 1 minute
   const formatRelativeTime = (dateStr: string) => {
-    const date = DateTime.fromSQL(dateStr, { zone: "utc" }).toLocal();
+    const date = DateTime.fromSQL(dateStr, { zone: "utc" }).setZone(getTimezone());
     const diff = Math.abs(date.diffNow(["minutes"]).minutes);
 
     if (diff < 1) {
@@ -219,7 +220,7 @@ export default function UsersPage() {
       cell: info => {
         const date = DateTime.fromSQL(info.getValue(), {
           zone: "utc",
-        }).toLocal();
+        }).setZone(getTimezone());
         const formattedDate = date.toLocaleString(DateTime.DATETIME_SHORT);
         const relativeTime = formatRelativeTime(info.getValue());
 
@@ -242,7 +243,7 @@ export default function UsersPage() {
       cell: info => {
         const date = DateTime.fromSQL(info.getValue(), {
           zone: "utc",
-        }).toLocal();
+        }).setZone(getTimezone());
         const formattedDate = date.toLocaleString(DateTime.DATETIME_SHORT);
         const relativeTime = formatRelativeTime(info.getValue());
 

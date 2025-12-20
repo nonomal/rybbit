@@ -1,3 +1,4 @@
+import { getTimezone } from "@/lib/store";
 import { Clock, MousePointerClick, Trash2 } from "lucide-react";
 import { DateTime } from "luxon";
 import { useState } from "react";
@@ -55,7 +56,7 @@ export function ReplayCard({ replay }: { replay: SessionReplayListItem }) {
   const deleteSessionReplay = useDeleteSessionReplay();
   const startTime = DateTime.fromSQL(replay.start_time, {
     zone: "utc",
-  }).toLocal();
+  }).setZone(getTimezone());
   const duration = replay.duration_ms ? Math.ceil(replay.duration_ms / 1000) : null;
 
   const formatDuration = (seconds: number) => {

@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { getTimezone } from "../../../lib/store";
 import { GetSessionsResponse } from "../../../api/analytics/endpoints";
 
 /**
@@ -61,8 +62,8 @@ export function sessionOverlapsWindow(
   windowStart: DateTime,
   windowEnd: DateTime
 ): boolean {
-  const sessionStart = DateTime.fromSQL(session.session_start, { zone: "utc" }).toLocal();
-  const sessionEnd = DateTime.fromSQL(session.session_end, { zone: "utc" }).toLocal();
+  const sessionStart = DateTime.fromSQL(session.session_start, { zone: "utc" }).setZone(getTimezone());
+  const sessionEnd = DateTime.fromSQL(session.session_end, { zone: "utc" }).setZone(getTimezone());
 
   // Session overlaps if:
   // - It starts before the window ends AND
@@ -97,8 +98,8 @@ export function getSessionCountsPerWindow(
   const endTimes: number[] = [];
 
   for (const session of sessions) {
-    const start = DateTime.fromSQL(session.session_start, { zone: "utc" }).toLocal();
-    const end = DateTime.fromSQL(session.session_end, { zone: "utc" }).toLocal();
+    const start = DateTime.fromSQL(session.session_start, { zone: "utc" }).setZone(getTimezone());
+    const end = DateTime.fromSQL(session.session_end, { zone: "utc" }).setZone(getTimezone());
     startTimes.push(start.toMillis());
     endTimes.push(end.toMillis());
   }

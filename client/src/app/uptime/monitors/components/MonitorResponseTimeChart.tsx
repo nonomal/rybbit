@@ -5,6 +5,7 @@ import { ChartTooltip } from "@/components/charts/ChartTooltip";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatChartDateTime, hour12, userLocale } from "@/lib/dateTimeUtils";
+import { getTimezone } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { ResponsiveLine } from "@nivo/line";
 import { DateTime } from "luxon";
@@ -80,7 +81,7 @@ export function MonitorResponseTimeChart({
       ?.map((item: any) => {
         if (!item.hour) return null;
 
-        const timestamp = DateTime.fromSQL(item.hour, { zone: "utc" }).toLocal();
+        const timestamp = DateTime.fromSQL(item.hour, { zone: "utc" }).setZone(getTimezone());
         if (!timestamp.isValid) return null;
 
         const dataPoint: any = {

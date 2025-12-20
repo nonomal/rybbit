@@ -1,3 +1,4 @@
+import { getTimezone } from "@/lib/store";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { DateTime } from "luxon";
@@ -90,7 +91,7 @@ function SessionCard({ session, onClick }: { session: GetSessionsResponse[number
                 zone: "utc",
               })
                 .setLocale(userLocale)
-                .toLocal()
+                .setZone(getTimezone())
                 .toFormat(hour12 ? "MMM d, h:mm a" : "dd MMM, HH:mm")}
             </span>
             <span className="text-neutral-400">•</span>

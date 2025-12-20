@@ -5,7 +5,7 @@ import { GetSessionsResponse } from "../../../../../../api/analytics/endpoints";
 import { APIResponse } from "../../../../../../api/types";
 import { toQueryParams } from "../../../../../../api/analytics/endpoints/types";
 import { authedFetch, buildApiParams } from "../../../../../../api/utils";
-import { getFilteredFilters, useStore } from "../../../../../../lib/store";
+import { getFilteredFilters, getTimezone, useStore } from "../../../../../../lib/store";
 import { SESSION_PAGE_FILTERS } from "../../../../../../lib/filterGroups";
 import { useTimelineStore } from "../../../timelineStore";
 import { calculateWindowSize } from "../../../timelineUtils";
@@ -89,8 +89,8 @@ export function useTimelineSessions() {
     let latest: DateTime | null = null;
 
     allSessions.forEach(session => {
-      const start = DateTime.fromSQL(session.session_start, { zone: "utc" }).toLocal();
-      const end = DateTime.fromSQL(session.session_end, { zone: "utc" }).toLocal();
+      const start = DateTime.fromSQL(session.session_start, { zone: "utc" }).setZone(getTimezone());
+      const end = DateTime.fromSQL(session.session_end, { zone: "utc" }).setZone(getTimezone());
 
       if (!earliest || start < earliest) {
         earliest = start;

@@ -1,5 +1,6 @@
 "use client";
 
+import { getTimezone } from "@/lib/store";
 import NumberFlow from "@number-flow/react";
 import { Info } from "lucide-react";
 import { DateTime } from "luxon";
@@ -122,7 +123,7 @@ export function OutboundLinksList({ outboundLinks, isLoading, size = "small" }: 
           const percentage = (link.count / totalCount) * 100;
           const lastClicked = DateTime.fromSQL(link.lastClicked, {
             zone: "utc",
-          }).toLocal();
+          }).setZone(getTimezone());
 
           return (
             <div

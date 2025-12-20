@@ -1,5 +1,6 @@
 import { TimeBucket } from "@rybbit/shared";
 import { DateTime, Duration, DurationLikeObject, Settings } from "luxon";
+import { getTimezone } from "./store";
 
 // Detect user locale from the browser environment (fallback to 'en-US' on server)
 export const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
@@ -161,6 +162,7 @@ export const formatChartDateTime = (dt: DateTime, bucket: TimeBucket) => {
     day: "numeric",
     hour: "numeric",
     hour12: hour12,
+    timeZone: getTimezone(),
   };
   if (showMinutes && !hour12) {
     options.minute = "numeric";
@@ -178,12 +180,12 @@ export const formatChartDateTime = (dt: DateTime, bucket: TimeBucket) => {
 };
 
 /**
- * Converts a UTC timestamp string to local time for display
+ * Converts a UTC timestamp string to user's selected timezone for display
  * @param timestamp - UTC timestamp string from the server
- * @returns DateTime object in local timezone
+ * @returns DateTime object in user's selected timezone
  */
 export const parseUtcTimestamp = (timestamp: string): DateTime => {
-  return DateTime.fromSQL(timestamp, { zone: "utc" }).toLocal();
+  return DateTime.fromSQL(timestamp, { zone: "utc" }).setZone(getTimezone());
 };
 
 // Timezones with GMT offset and city name

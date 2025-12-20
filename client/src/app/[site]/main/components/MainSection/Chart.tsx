@@ -10,17 +10,17 @@ import { APIResponse } from "../../../../../api/types";
 import { Time } from "../../../../../components/DateSelector/types";
 import { formatSecondsAsMinutesAndSeconds, formatter } from "../../../../../lib/utils";
 import { userLocale, hour12, formatChartDateTime } from "../../../../../lib/dateTimeUtils";
+import { getTimezone } from "../../../../../lib/store";
 import { ChartTooltip } from "../../../../../components/charts/ChartTooltip";
 
-const getMax = (time: Time, bucket: TimeBucket) => {
-  const now = DateTime.now();
+const getMax = (time: Time, bucket: TimeBucket, timezone: string) => {
   if (time.mode === "past-minutes") {
     if (bucket === "hour") {
-      return DateTime.now().setZone("UTC").startOf("hour").toJSDate();
+      return DateTime.now().setZone(timezone).startOf("hour").toJSDate();
     }
     return undefined;
   } else if (time.mode === "day") {
-    const dayDate = DateTime.fromISO(time.day)
+    const dayDate = DateTime.fromISO(time.day, { zone: timezone })
       .endOf("day")
       .minus({
         minutes:
@@ -34,12 +34,12 @@ const getMax = (time: Time, bucket: TimeBucket) => {
                   ? 4
                   : 0,
       });
-    return now < dayDate ? dayDate.toJSDate() : undefined;
+    return dayDate.toJSDate();
   } else if (time.mode === "range") {
     if (bucket === "day" || bucket === "week" || bucket === "month" || bucket === "year") {
       return undefined;
     }
-    const rangeDate = DateTime.fromISO(time.endDate)
+    const rangeDate = DateTime.fromISO(time.endDate, { zone: timezone })
       .endOf("day")
       .minus({
         minutes:
@@ -53,54 +53,55 @@ const getMax = (time: Time, bucket: TimeBucket) => {
                   ? 4
                   : 0,
       });
-    return now < rangeDate ? rangeDate.toJSDate() : undefined;
+    return rangeDate.toJSDate();
   } else if (time.mode === "week") {
     if (bucket === "hour") {
-      const endDate = DateTime.fromISO(time.week).endOf("week").minus({
+      const endDate = DateTime.fromISO(time.week, { zone: timezone }).endOf("week").minus({
         minutes: 59,
       });
-      return now < endDate ? endDate.toJSDate() : undefined;
+      return endDate.toJSDate();
     }
     if (bucket === "fifteen_minutes") {
-      const endDate = DateTime.fromISO(time.week).endOf("week").minus({
+      const endDate = DateTime.fromISO(time.week, { zone: timezone }).endOf("week").minus({
         minutes: 14,
       });
-      return now < endDate ? endDate.toJSDate() : undefined;
+      return endDate.toJSDate();
     }
     return undefined;
   } else if (time.mode === "month") {
     if (bucket === "hour") {
-      const endDate = DateTime.fromISO(time.month).endOf("month").minus({
+      const endDate = DateTime.fromISO(time.month, { zone: timezone }).endOf("month").minus({
         minutes: 59,
       });
-      return now < endDate ? endDate.toJSDate() : undefined;
+      return endDate.toJSDate();
     }
-    const monthDate = DateTime.fromISO(time.month).endOf("month");
-    return now < monthDate ? monthDate.toJSDate() : undefined;
+    const monthDate = DateTime.fromISO(time.month, { zone: timezone }).endOf("month");
+    return monthDate.toJSDate();
   } else if (time.mode === "year") {
-    const yearDate = DateTime.fromISO(time.year).endOf("year");
-    return now < yearDate ? yearDate.toJSDate() : undefined;
+    const yearDate = DateTime.fromISO(time.year, { zone: timezone }).endOf("year");
+    return yearDate.toJSDate();
   }
   return undefined;
 };
 
-const getMin = (time: Time, bucket: TimeBucket) => {
+const getMin = (time: Time, bucket: TimeBucket, timezone: string) => {
   if (time.mode === "past-minutes") {
     return DateTime.now()
+      .setZone(timezone)
       .minus({ minutes: time.pastMinutesStart })
       .startOf(time.pastMinutesStart < 360 ? "minute" : "hour")
       .toJSDate();
   } else if (time.mode === "day") {
-    const dayDate = DateTime.fromISO(time.day).startOf("day");
+    const dayDate = DateTime.fromISO(time.day, { zone: timezone }).startOf("day");
     return dayDate.toJSDate();
   } else if (time.mode === "week") {
-    const weekDate = DateTime.fromISO(time.week).startOf("week");
+    const weekDate = DateTime.fromISO(time.week, { zone: timezone }).startOf("week");
     return weekDate.toJSDate();
   } else if (time.mode === "month") {
-    const monthDate = DateTime.fromISO(time.month).startOf("month");
+    const monthDate = DateTime.fromISO(time.month, { zone: timezone }).startOf("month");
     return monthDate.toJSDate();
   } else if (time.mode === "year") {
-    const yearDate = DateTime.fromISO(time.year).startOf("year");
+    const yearDate = DateTime.fromISO(time.year, { zone: timezone }).startOf("year");
     return yearDate.toJSDate();
   }
   return undefined;
@@ -130,6 +131,10 @@ export function Chart({
   const { time, bucket, selectedStat } = useStore();
   const { width } = useWindowSize();
   const nivoTheme = useNivoTheme();
+  const timezone = getTimezone();
+
+  const chartMin = getMin(time, bucket, timezone);
+  const chartMax = getMax(time, bucket, timezone);
 
   const maxTicks = Math.round((width ?? Infinity) / 75);
 
@@ -140,8 +145,8 @@ export function Chart({
   const formattedData =
     data?.data
       ?.map((e, i) => {
-        // Parse timestamp properly
-        const timestamp = DateTime.fromSQL(e.time).toUTC();
+        // Parse timestamp in the selected timezone, then convert to UTC for chart
+        const timestamp = DateTime.fromSQL(e.time, { zone: timezone }).toUTC();
 
         // filter out dates from the future
         if (timestamp > DateTime.now()) {
@@ -154,7 +159,7 @@ export function Chart({
           previousY: i >= lengthDiff && previousData?.data?.[i - lengthDiff][selectedStat],
           currentTime: timestamp,
           previousTime:
-            i >= lengthDiff ? DateTime.fromSQL(previousData?.data?.[i - lengthDiff]?.time ?? "").toUTC() : undefined,
+            i >= lengthDiff ? DateTime.fromSQL(previousData?.data?.[i - lengthDiff]?.time ?? "", { zone: timezone }).toUTC() : undefined,
         };
       })
       .filter(e => e !== null) || [];
@@ -253,8 +258,8 @@ export function Chart({
         format: "%Y-%m-%d %H:%M:%S",
         precision: "second",
         useUTC: true,
-        max: getMax(time, bucket),
-        min: getMin(time, bucket),
+        max: chartMax,
+        min: chartMin,
       }}
       yScale={{
         type: "linear",
@@ -281,7 +286,7 @@ export function Chart({
             : Math.min(12, data?.data?.length ?? 0)
         ),
         format: value => {
-          const dt = DateTime.fromJSDate(value).setLocale(userLocale);
+          const dt = DateTime.fromJSDate(value, { zone: "utc" }).setZone(getTimezone()).setLocale(userLocale);
           if (time.mode === "past-minutes") {
             if (time.pastMinutesStart < 1440) {
               return dt.toFormat(hour12 ? "h:mm" : "HH:mm");

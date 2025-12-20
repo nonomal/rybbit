@@ -1,5 +1,6 @@
 "use client";
 
+import { getTimezone } from "@/lib/store";
 import { Calendar, CalendarCheck, Clock, Files, Globe, Laptop, Monitor, Smartphone, Tablet } from "lucide-react";
 import { DateTime } from "luxon";
 import { Avatar, generateName } from "../../../../../components/Avatar";
@@ -122,7 +123,7 @@ export function UserSidebar({ data, isLoading, sessionCount, getRegionName }: Us
             label="First Seen"
             value={
               data?.first_seen
-                ? DateTime.fromSQL(data.first_seen, { zone: "utc" }).toLocal().toLocaleString(DateTime.DATE_MED)
+                ? DateTime.fromSQL(data.first_seen, { zone: "utc" }).setZone(getTimezone()).toLocaleString(DateTime.DATE_MED)
                 : "—"
             }
             isLoading={isLoading}
@@ -132,7 +133,7 @@ export function UserSidebar({ data, isLoading, sessionCount, getRegionName }: Us
             label="Last Seen"
             value={
               data?.last_seen
-                ? DateTime.fromSQL(data.last_seen, { zone: "utc" }).toLocal().toLocaleString(DateTime.DATE_MED)
+                ? DateTime.fromSQL(data.last_seen, { zone: "utc" }).setZone(getTimezone()).toLocaleString(DateTime.DATE_MED)
                 : "—"
             }
             isLoading={isLoading}

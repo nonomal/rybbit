@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getTimezone } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle, MoreHorizontal } from "lucide-react";
 import { DateTime } from "luxon";
@@ -23,7 +24,7 @@ import {
 } from "../../../api/uptime/incidents";
 
 const formatStartTime = (timestamp: string) => {
-  const dt = DateTime.fromSQL(timestamp, { zone: "UTC" }).toLocal();
+  const dt = DateTime.fromSQL(timestamp, { zone: "UTC" }).setZone(getTimezone());
   return dt.toRelative() || dt.toFormat("MMM dd, HH:mm");
 };
 

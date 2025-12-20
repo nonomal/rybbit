@@ -1,5 +1,6 @@
 "use client";
 import { DateTime } from "luxon";
+import { getTimezone } from "../../../../lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/table";
 import { authClient } from "../../../../lib/auth";
@@ -194,7 +195,7 @@ function Organization({
                       <TableCell className="capitalize">{member.role}</TableCell>
                       <TableCell>
                         {DateTime.fromSQL(member.createdAt, { zone: "utc" })
-                          .toLocal()
+                          .setZone(getTimezone())
                           .toLocaleString(DateTime.DATE_SHORT)}
                       </TableCell>
                       {isAdmin && (

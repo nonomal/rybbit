@@ -1,6 +1,7 @@
 import BoringAvatar from "boring-avatars";
 import { DateTime } from "luxon";
 import { animals, colors, uniqueNamesGenerator } from "unique-names-generator";
+import { getTimezone } from "../lib/store";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export const AVATAR_COLORS = [
@@ -27,7 +28,7 @@ export const AVATAR_COLORS = [
 ];
 
 export function Avatar({ id, size = 20, lastActiveTime }: { id: string; size?: number; lastActiveTime?: DateTime }) {
-  const timeSinceEnd = lastActiveTime ? -lastActiveTime.toLocal().diffNow().toMillis() / 1000 : 0;
+  const timeSinceEnd = lastActiveTime ? -lastActiveTime.setZone(getTimezone()).diffNow().toMillis() / 1000 : 0;
   const online = lastActiveTime ? timeSinceEnd < 300 : false;
   return (
     <div className="relative">

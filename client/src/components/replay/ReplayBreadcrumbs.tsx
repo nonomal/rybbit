@@ -33,6 +33,7 @@ import { Avatar } from "@/components/Avatar";
 import { IdentifiedBadge } from "@/components/IdentifiedBadge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getTimezone } from "@/lib/store";
 import { cn, getUserDisplayName } from "@/lib/utils";
 import { useReplayStore } from "./replayStore";
 
@@ -268,7 +269,7 @@ export function ReplayBreadcrumbs() {
             id={data.metadata.user_id}
             size={24}
             lastActiveTime={
-              data.metadata.end_time ? DateTime.fromSQL(data.metadata.end_time, { zone: "utc" }).toLocal() : undefined
+              data.metadata.end_time ? DateTime.fromSQL(data.metadata.end_time, { zone: "utc" }).setZone(getTimezone()) : undefined
             }
           />
           <span className="truncate max-w-[120px]">{getUserDisplayName(data.metadata)}</span>

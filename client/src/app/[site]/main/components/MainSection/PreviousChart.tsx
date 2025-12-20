@@ -1,6 +1,6 @@
 "use client";
 import { useNivoTheme } from "@/lib/nivo";
-import { useStore } from "@/lib/store";
+import { getTimezone, useStore } from "@/lib/store";
 import { useTheme } from "next-themes";
 import { ResponsiveLine } from "@nivo/line";
 import { DateTime } from "luxon";
@@ -9,18 +9,18 @@ import { APIResponse } from "../../../../../api/types";
 import { Time } from "../../../../../components/DateSelector/types";
 import { TimeBucket } from "@rybbit/shared";
 
-const getMin = (time: Time, bucket: TimeBucket) => {
+const getMin = (time: Time, bucket: TimeBucket, timezone: string) => {
   if (time.mode === "day") {
-    const dayDate = DateTime.fromISO(time.day).startOf("day");
+    const dayDate = DateTime.fromISO(time.day, { zone: timezone }).startOf("day");
     return dayDate.toJSDate();
   } else if (time.mode === "week") {
-    const weekDate = DateTime.fromISO(time.week).startOf("week");
+    const weekDate = DateTime.fromISO(time.week, { zone: timezone }).startOf("week");
     return weekDate.toJSDate();
   } else if (time.mode === "month") {
-    const monthDate = DateTime.fromISO(time.month).startOf("month");
+    const monthDate = DateTime.fromISO(time.month, { zone: timezone }).startOf("month");
     return monthDate.toJSDate();
   } else if (time.mode === "year") {
-    const yearDate = DateTime.fromISO(time.year).startOf("year");
+    const yearDate = DateTime.fromISO(time.year, { zone: timezone }).startOf("year");
     return yearDate.toJSDate();
   }
   // else if (time.mode === "past-minutes") {
@@ -47,10 +47,12 @@ export function PreviousChart({
   const { resolvedTheme } = useTheme();
   const nivoTheme = useNivoTheme();
 
+  const timezone = getTimezone();
   const size = (data?.data.length ?? 0 / 2) + 1;
   const formattedData = data?.data
     ?.map(e => {
-      const timestamp = DateTime.fromSQL(e.time).toUTC();
+      // Parse timestamp in the selected timezone, then convert to UTC for chart
+      const timestamp = DateTime.fromSQL(e.time, { zone: timezone }).toUTC();
       return {
         x: timestamp.toFormat("yyyy-MM-dd HH:mm:ss"),
         y: e[selectedStat],
@@ -58,7 +60,7 @@ export function PreviousChart({
     })
     .slice(0, size);
 
-  const min = getMin(time, bucket);
+  const min = getMin(time, bucket, timezone);
   const maxPastMinutes =
     time.mode === "past-minutes" && bucket === "hour"
       ? DateTime.now().setZone("UTC").minus({ minutes: time.pastMinutesStart }).startOf("hour").toJSDate()
@@ -101,7 +103,7 @@ export function PreviousChart({
         truncateTickAt: 0,
         tickValues: 0,
         format: value => {
-          const localTime = DateTime.fromJSDate(value).toLocal();
+          const localTime = DateTime.fromJSDate(value, { zone: "utc" }).setZone(getTimezone());
 
           if ((time.mode === "past-minutes" && time.pastMinutesStart >= 1440) || time.mode === "day") {
             return localTime.toFormat("ha");

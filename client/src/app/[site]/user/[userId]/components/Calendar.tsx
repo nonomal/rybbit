@@ -1,3 +1,4 @@
+import { getTimezone } from "@/lib/store";
 import { ResponsiveTimeRange } from "@nivo/calendar";
 import _ from "lodash";
 import { DateTime } from "luxon";
@@ -13,7 +14,7 @@ export const VisitCalendar = ({ sessionCount }: { sessionCount: UserSessionCount
     .map(e => ({
       value: e.sessions,
       day: DateTime.fromSQL(e.date ?? 0, { zone: "utc" })
-        .toLocal()
+        .setZone(getTimezone())
         .toFormat("y-LL-dd"),
     }))
     .reverse();
