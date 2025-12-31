@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, Fragment } from "react";
 import { AdminOrganizationData } from "@/api/admin/endpoints";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -229,8 +229,8 @@ export function OrganizationsTable({ organizations, isLoading, searchQuery }: Or
                 ))
             ) : paginatedOrganizations && paginatedOrganizations.length > 0 ? (
               paginatedOrganizations.map(row => (
-                <>
-                  <TableRow key={row.id} className="group">
+                <Fragment key={row.id}>
+                  <TableRow className="group">
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))}
@@ -242,7 +242,7 @@ export function OrganizationsTable({ organizations, isLoading, searchQuery }: Or
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               ))
             ) : (
               <TableRow>
