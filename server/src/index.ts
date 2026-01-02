@@ -287,7 +287,7 @@ async function analyticsRoutes(fastify: FastifyInstance) {
 
 async function sessionReplayRoutes(fastify: FastifyInstance) {
   // Session Replay
-  fastify.post("/sites/:siteId/session-replay/record", recordSessionReplay); // Public - tracking endpoint
+  fastify.post("/session-replay/record/:siteId", recordSessionReplay); // Public - tracking endpoint
   fastify.get("/sites/:siteId/session-replay/list", publicSite, getSessionReplays);
   fastify.get("/sites/:siteId/session-replay/:sessionId", publicSite, getSessionReplayEvents);
   fastify.delete("/sites/:siteId/session-replay/:sessionId", authSite, deleteSessionReplay);
