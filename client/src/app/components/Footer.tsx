@@ -3,6 +3,7 @@ import Link from "next/link";
 import { IS_CLOUD } from "../../lib/const";
 import { useWhiteLabel } from "../../hooks/useIsWhiteLabel";
 import { HeartIcon } from "lucide-react";
+import { Button } from "../../components/ui/button";
 
 export function Footer() {
   const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION;
@@ -24,14 +25,11 @@ export function Footer() {
                 <div className="text-sm text-neutral-600 dark:text-neutral-200">
                   Liking Rybbit? Consider sponsoring the project!
                 </div>
-                <a
-                  href="https://github.com/sponsors/goldflag"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200 rounded-lg transition-colors text-sm"
-                >
-                  <HeartIcon className="w-5 h-5 text-red-500" strokeWidth={3} />
-                  Sponsor us
+                <a href="https://github.com/sponsors/goldflag" target="_blank" rel="noopener noreferrer">
+                  <Button>
+                    <HeartIcon className="w-5 h-5 text-red-500" strokeWidth={3} />
+                    Sponsor us
+                  </Button>
                 </a>
               </div>
             )}

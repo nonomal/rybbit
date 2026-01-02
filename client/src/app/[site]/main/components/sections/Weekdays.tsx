@@ -208,7 +208,7 @@ export function Weekdays() {
                         heatmapData[day].length > hour
                           ? heatmapData[day][hour]
                           : 0;
-                      const colorClass = value > 0 ? getColorIntensity(value) : "bg-neutral-200 dark:bg-neutral-800";
+                      const colorClass = value > 0 ? getColorIntensity(value) : "bg-neutral-50 dark:bg-neutral-850";
                       return (
                         <Tooltip key={day}>
                           <TooltipTrigger asChild>

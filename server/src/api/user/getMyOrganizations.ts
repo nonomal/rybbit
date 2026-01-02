@@ -47,7 +47,7 @@ export const getMyOrganizations = async (request: FastifyRequest, reply: Fastify
           db
             .select({
               siteId: sites.siteId,
-              id: sites.id,
+              siteUuid: sites.id,
               domain: sites.domain,
               name: sites.name,
               organizationId: sites.organizationId,
@@ -79,7 +79,17 @@ export const getMyOrganizations = async (request: FastifyRequest, reply: Fastify
               email: m.userEmail,
             },
           })),
-          sites: organizationSites,
+          sites: organizationSites.map(site => ({
+            id: String(site.siteId ?? site.siteUuid),
+            domain: site.domain,
+            name: site.name,
+            organizationId: site.organizationId,
+            createdBy: site.createdBy,
+            public: site.public,
+            saltUserIds: site.saltUserIds,
+            blockBots: site.blockBots,
+            createdAt: site.createdAt,
+          })),
         };
       })
     );
